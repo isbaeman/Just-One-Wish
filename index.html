@@ -312,26 +312,42 @@ body {
 
 #backgroundImage {
     position: absolute;
-    inset: -4%;
-    width: 108%;
-    height: 108%;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    object-position: center 42%;
+    object-position: center 58%;
+    background: #050505;
     z-index: 1;
     opacity: 0;
     filter:
-        brightness(.62)
+        brightness(.66)
         contrast(.95)
-        saturate(.78);
-    transform: scale(1.02);
+        saturate(.8);
+    transform: scale(1.01);
     transition:
         opacity 3.5s ease,
-        transform 30s linear;
+        transform 32s linear;
 }
 
 #experience.active #backgroundImage {
-    opacity: .9;
-    transform: scale(1.1);
+    opacity: .92;
+    transform: scale(1.07);
+}
+
+/* Soft pool of darkness so the lyrics always stay legible. */
+.lyric-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    background:
+        radial-gradient(
+            ellipse 78% 42% at 50% 50%,
+            rgba(0,0,0,.62) 0%,
+            rgba(0,0,0,.38) 45%,
+            rgba(0,0,0,0) 78%
+        );
 }
 
 /* The video now only carries the audio. */
@@ -587,7 +603,10 @@ body {
     }
 
     .lyric-stage {
-        padding: 30px 22px 45px;
+        padding:
+            calc(30px + env(safe-area-inset-top, 0px))
+            22px
+            calc(45px + env(safe-area-inset-bottom, 0px));
     }
 
     .lyric {
@@ -597,15 +616,33 @@ body {
         text-shadow: 0 2px 18px rgba(0,0,0,.9);
     }
 
+    /*
+       The picture is portrait and the rose sits at its edge,
+       so on phones it is fitted whole instead of cropped.
+       Its own black backdrop blends into the page.
+    */
     #backgroundImage {
-        inset: -6%;
-        width: 112%;
-        height: 112%;
-        object-position: center 40%;
+        object-fit: contain;
+        object-position: center 46%;
         filter:
-            brightness(.55)
-            contrast(.92)
-            saturate(.72);
+            brightness(.7)
+            contrast(.94)
+            saturate(.8);
+    }
+
+    #experience.active #backgroundImage {
+        opacity: .95;
+        transform: scale(1.04);
+    }
+
+    .lyric-scrim {
+        background:
+            radial-gradient(
+                ellipse 96% 34% at 50% 50%,
+                rgba(0,0,0,.72) 0%,
+                rgba(0,0,0,.45) 50%,
+                rgba(0,0,0,0) 82%
+            );
     }
 
     .scroll-indicator { bottom: 6vh; }
@@ -718,6 +755,7 @@ body {
 
         <div class="video-overlay"></div>
         <div class="video-vignette"></div>
+        <div class="lyric-scrim"></div>
 
         <div class="lyric-stage">
             <div id="lyric" class="lyric noto-nastaliq-urdu"></div>
@@ -789,6 +827,13 @@ const lyrics = [
     { time: 87, text: "یہ آنکھیں میری کہتی ہیں کہ تُو ٹھہر جا" },
     { time: 92, text: "ادھورا سا یہ گھر لگے گا تیرے بنا" }
 ];
+
+/*
+   The song starts the moment "Begin" is pressed.
+   The first lyric waits this many seconds after that.
+   Change 5 to any number to move all lines together.
+*/
+const LYRIC_START_DELAY = 5;
 
 /* How long the last line stays before the screen goes black. */
 const TAIL_SECONDS = 7;
@@ -943,9 +988,10 @@ function getTime() {
 }
 
 function getLyricIndex(t) {
+    const shifted = t - LYRIC_START_DELAY;
     let index = -1;
     for (let i = 0; i < lyrics.length; i++) {
-        if (t >= lyrics[i].time) index = i;
+        if (shifted >= lyrics[i].time) index = i;
         else break;
     }
     return index;
@@ -986,7 +1032,7 @@ function startLoop() {
 
         const lastTime = lyrics[lyrics.length - 1].time;
 
-        if (t >= lastTime + TAIL_SECONDS) {
+        if (t >= lastTime + LYRIC_START_DELAY + TAIL_SECONDS) {
             beginEnding();
             return;
         }
