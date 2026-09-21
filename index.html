@@ -615,6 +615,44 @@ body {
     }
 }
 
+/* Same scroll cue + button, shown under the last lyric on the lyrics screen. */
+.lyric-cta {
+    position: absolute;
+    left: 50%;
+    bottom: 8vh;
+    z-index: 6;
+    transform: translateX(-50%);
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity 2.5s ease,
+        visibility 2.5s ease;
+}
+
+.lyric-cta.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.lyric-cta.show .read-btn {
+    pointer-events: auto;
+}
+
+/* After it has been pressed: fade away and ignore further taps. */
+.lyric-cta.used {
+    opacity: 0;
+    transition-duration: 1.2s;
+}
+
+.lyric-cta.used .read-btn {
+    pointer-events: none;
+}
+
+@media (max-width: 600px) {
+    .lyric-cta { bottom: 6vh; }
+}
+
 /* ---------- SCROLL HOST + LETTER ---------- */
 
 #scrollHost {
@@ -881,6 +919,13 @@ body {
             <div id="lyric" class="lyric noto-nastaliq-urdu"></div>
         </div>
 
+        <div id="lyricCta" class="lyric-cta">
+            <span class="scroll-arrow">↓</span>
+            <span class="scroll-text">scroll down</span>
+            <span class="scroll-line" aria-hidden="true"></span>
+            <button id="lyricReadButton" class="read-btn" type="button">CLICK TO READ</button>
+        </div>
+
     </main>
 
 
@@ -977,6 +1022,8 @@ const letterSection  = document.getElementById("letterSection");
 const letterLines    = document.querySelectorAll(".letter-line");
 const signature      = document.getElementById("signature");
 const readButton     = document.getElementById("readButton");
+const lyricCta       = document.getElementById("lyricCta");
+const lyricReadButton = document.getElementById("lyricReadButton");
 
 let currentLyricIndex  = -1;
 let experienceStarted  = false;
@@ -984,6 +1031,7 @@ let endingStarted      = false;
 let letterOpened       = false;
 let usingFallbackClock = false;
 let clockStart         = 0;
+let readRequested      = false;
 
 
 /* ============================ PASSWORD ============================ */
@@ -1165,6 +1213,7 @@ function startLoop() {
         if (index !== currentLyricIndex) {
             currentLyricIndex = index;
             if (index >= 0) showLyric(index);
+            if (index === lyrics.length - 1) showReadCta();
         }
 
         // Let the audio finish naturally; use the duration as a fallback
@@ -1182,6 +1231,27 @@ function startLoop() {
 }
 
 video.addEventListener("ended", beginEnding);
+
+/* Scroll cue + "CLICK TO READ" appear under the last lyric. */
+function showReadCta() {
+    setTimeout(() => {
+        if (!endingStarted) lyricCta.classList.add("show");
+    }, 1600);
+}
+
+/* Softly lower the music while the lyrics screen closes. */
+function fadeOutMusic() {
+    try {
+        const startVolume = video.volume;
+        const steps = 13;
+        let step = 0;
+        const timer = setInterval(() => {
+            step++;
+            video.volume = Math.max(0, startVolume * (1 - step / steps));
+            if (step >= steps) clearInterval(timer);
+        }, 100);
+    } catch (e) {}
+}
 
 
 /* ============================ ENDING ============================ */
@@ -1206,6 +1276,11 @@ function beginEnding() {
             /* Unlock scrolling only now. */
             document.documentElement.classList.remove("locked");
             document.body.classList.remove("locked");
+
+            /* "CLICK TO READ" was pressed on the lyrics screen: go straight to the letter. */
+            if (readRequested) {
+                requestAnimationFrame(goToLetter);
+            }
 
             setTimeout(() => {
                 endingScreen.classList.add("show-indicator");
@@ -1243,9 +1318,7 @@ window.addEventListener("scroll", function () {
 }, { passive: true });
 
 /* "CLICK TO READ" does the same thing scrolling does, then glides to the letter. */
-readButton.addEventListener("click", function () {
-
-    if (!endingStarted) return;
+function goToLetter() {
 
     openLetter();
 
@@ -1253,6 +1326,26 @@ readButton.addEventListener("click", function () {
         top: letterSection.getBoundingClientRect().top + window.scrollY,
         behavior: "smooth"
     });
+}
+
+readButton.addEventListener("click", function () {
+
+    if (!endingStarted) return;
+
+    goToLetter();
+
+});
+
+/* Pressed under the last lyric: close the lyrics screen the way the song's end does, then open the letter. */
+lyricReadButton.addEventListener("click", function () {
+
+    if (endingStarted || readRequested) return;
+
+    readRequested = true;
+    lyricCta.classList.add("used");
+
+    fadeOutMusic();
+    beginEnding();
 
 });
 
