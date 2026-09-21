@@ -3,20 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 
 <title>One Last Wish</title>
 
+<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400&family=Qwitcher+Grypen:wght@400;700&display=swap"
+      rel="stylesheet">
 
 <style>
-
 /* =========================================================
-   RESET
+   ROOT
 ========================================================= */
+
+:root {
+    --black: #050505;
+    --black-soft: #0a0a0a;
+    --dark: #111111;
+    --dark-soft: #181818;
+
+    --white: #ede8e2;
+    --muted: #b8b1aa;
+
+    --ease: cubic-bezier(.22, .61, .36, 1);
+}
 
 * {
     margin: 0;
@@ -24,1155 +37,1187 @@
     box-sizing: border-box;
 }
 
-html,
+html {
+    width: 100%;
+    min-height: 100%;
+    background: var(--black);
+    scroll-behavior: smooth;
+}
+
 body {
     width: 100%;
-    height: 100%;
+    min-height: 100%;
+    background: var(--black);
+    color: var(--white);
+    overflow-x: hidden;
+    font-family: Georgia, "Times New Roman", serif;
 }
-
-body {
-    background: #000;
-    color: #fff;
-    overflow: hidden;
-    font-family: "Playfair Display", serif;
-}
-
 
 /* =========================================================
-   PASSWORD SCREEN
+   FONTS
 ========================================================= */
 
-.password-screen {
+.noto-nastaliq-urdu {
+    font-family: "Noto Nastaliq Urdu", serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.qwitcher-grypen-regular {
+    font-family: "Qwitcher Grypen", cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.qwitcher-grypen-bold {
+    font-family: "Qwitcher Grypen", cursive;
+    font-weight: 700;
+    font-style: normal;
+}
+
+/* =========================================================
+   GLOBAL ATMOSPHERE
+========================================================= */
+
+#app {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background: var(--black);
+}
+
+#app::before {
+    content: "";
     position: fixed;
     inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: .045;
 
-    z-index: 9999;
+    background-image:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+
+    mix-blend-mode: screen;
+}
+
+#app::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            transparent 35%,
+            rgba(0,0,0,.28) 72%,
+            rgba(0,0,0,.72) 100%
+        );
+}
+
+/* =========================================================
+   SCREENS
+========================================================= */
+
+.screen {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    background:
-        radial-gradient(
-            circle at center,
-            #151515 0%,
-            #080808 42%,
-            #000 100%
-        );
+    background: var(--black);
 
-    transition:
-        opacity 1s ease,
-        visibility 1s ease;
-}
-
-.password-screen.hidden {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
+
+    transition:
+        opacity 1.8s var(--ease),
+        visibility 1.8s var(--ease);
 }
 
-.password-content {
-    width: min(90%, 420px);
+.screen.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
 
+/* =========================================================
+   PASSWORD
+========================================================= */
+
+#passwordScreen {
+    z-index: 50;
+}
+
+.password-wrap {
+    width: min(88vw, 380px);
     text-align: center;
 }
 
-.password-small {
-    font-size: 10px;
-
-    letter-spacing: 5px;
-
-    text-transform: uppercase;
-
-    color: rgba(255,255,255,.42);
-
-    margin-bottom: 25px;
-}
-
 .password-title {
-    font-size: clamp(30px, 6vw, 48px);
-
-    font-weight: 400;
-
-    letter-spacing: 1px;
-
     margin-bottom: 34px;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(18px, 3vw, 22px);
+    font-weight: 400;
+    letter-spacing: .14em;
+
+    color: var(--white);
+
+    opacity: 0;
+    transform: translateY(12px);
+
+    animation: passwordTitleIn 1.6s 0.3s var(--ease) forwards;
 }
 
 .password-form {
     display: flex;
-
-    width: 100%;
-
-    border-bottom:
-        1px solid rgba(255,255,255,.25);
-
-    transition:
-        border-color .3s ease;
-}
-
-.password-form:focus-within {
-    border-color:
-        rgba(255,255,255,.75);
+    flex-direction: column;
+    align-items: center;
 }
 
 .password-input {
-    flex: 1;
+    width: 100%;
+    height: 50px;
 
-    min-width: 0;
-
-    padding: 14px 4px;
-
-    border: none;
-    outline: none;
+    border: 0;
+    border-bottom: 1px solid rgba(237,232,226,.22);
 
     background: transparent;
+    outline: none;
 
-    color: white;
+    color: var(--white);
 
     text-align: center;
+    font-size: 17px;
+    letter-spacing: .18em;
 
-    font-size: 18px;
-
-    letter-spacing: 6px;
-
-    font-family: Arial, sans-serif;
+    transition:
+        border-color .5s ease,
+        box-shadow .5s ease;
 }
 
 .password-input::placeholder {
-    color: rgba(255,255,255,.25);
-
-    letter-spacing: 3px;
+    color: rgba(184,177,170,.42);
+    letter-spacing: .08em;
 }
 
-.password-button {
-    width: 48px;
+.password-input:focus {
+    border-bottom-color: rgba(237,232,226,.58);
+}
 
-    border: none;
+.enter-btn {
+    margin-top: 30px;
 
-    background: transparent;
+    min-width: 105px;
+    height: 42px;
 
-    color: rgba(255,255,255,.65);
+    border: 1px solid rgba(237,232,226,.18);
+    border-radius: 999px;
 
-    font-size: 21px;
+    background: rgba(255,255,255,.015);
+
+    color: var(--muted);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 13px;
+    letter-spacing: .13em;
 
     cursor: pointer;
 
     transition:
-        color .25s ease,
-        transform .25s ease;
+        color .45s ease,
+        border-color .45s ease,
+        background .45s ease,
+        transform .45s var(--ease);
 }
 
-.password-button:hover {
-    color: white;
+.enter-btn:hover {
+    color: var(--white);
+    border-color: rgba(237,232,226,.42);
+    background: rgba(255,255,255,.04);
+    transform: translateY(-1px);
+}
 
-    transform: translateX(3px);
+.enter-btn:active {
+    transform: translateY(0);
 }
 
 .password-error {
-    min-height: 22px;
+    min-height: 20px;
+    margin-top: 17px;
 
-    margin-top: 15px;
+    color: rgba(184,177,170,.7);
 
-    font-family: Arial, sans-serif;
-
-    font-size: 11px;
-
-    color: rgba(255,255,255,.5);
+    font-size: 12px;
+    letter-spacing: .05em;
 
     opacity: 0;
-
-    transition: opacity .3s ease;
+    transition: opacity .5s ease;
 }
 
 .password-error.show {
     opacity: 1;
 }
 
+@keyframes passwordTitleIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
 /* =========================================================
    WISH SCREEN
 ========================================================= */
 
-.wish-screen {
-    position: fixed;
-    inset: 0;
-
-    z-index: 9000;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: #000;
-
-    opacity: 0;
-    visibility: hidden;
-
-    transition:
-        opacity 1.2s ease,
-        visibility 1.2s ease;
+#wishScreen {
+    z-index: 40;
+    background: var(--black);
 }
 
-.wish-screen.show {
-    opacity: 1;
-    visibility: visible;
+.wish-content {
+    position: relative;
+    text-align: center;
 }
 
-.wish-text {
-    font-size: clamp(28px, 5vw, 58px);
+.wish-title {
+    color: var(--white);
 
+    font-family: "Qwitcher Grypen", cursive;
+
+    font-size: clamp(58px, 9vw, 115px);
     font-weight: 400;
 
-    letter-spacing: 3px;
+    line-height: .8;
 
-    text-align: center;
-
-    color: rgba(255,255,255,.94);
+    letter-spacing: .015em;
 
     opacity: 0;
-
-    transform:
-        translateY(20px);
+    filter: blur(12px);
+    transform: scale(.94);
 
     transition:
-        opacity 1.4s ease,
-        transform 1.4s ease;
+        opacity 3s var(--ease),
+        filter 3s var(--ease),
+        transform 3s var(--ease);
 }
 
-.wish-screen.show .wish-text {
-    opacity: 1;
-
-    transform:
-        translateY(0);
+#wishScreen.show-title .wish-title {
+    opacity: .95;
+    filter: blur(0);
+    transform: scale(1);
 }
-
-.wish-text.fade-out {
-    opacity: 0;
-
-    transform:
-        translateY(-20px);
-}
-
 
 /* =========================================================
-   MAIN EXPERIENCE
+   BEGIN SCREEN
 ========================================================= */
 
-.main {
+#beginScreen {
+    z-index: 35;
+    background: var(--black);
+}
+
+.begin-wrap {
+    text-align: center;
+}
+
+.begin-btn {
+    border: 1px solid rgba(237,232,226,.23);
+
+    background: rgba(255,255,255,.012);
+
+    color: var(--white);
+
+    border-radius: 999px;
+
+    min-width: 120px;
+    height: 45px;
+
+    padding: 0 25px;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 13px;
+
+    letter-spacing: .16em;
+
+    cursor: pointer;
+
+    opacity: 0;
+
+    transition:
+        opacity 1.6s ease,
+        color .45s ease,
+        border-color .45s ease,
+        background .45s ease,
+        transform .45s var(--ease);
+}
+
+#beginScreen.active .begin-btn {
+    opacity: 1;
+    transition-delay: .6s;
+}
+
+.begin-btn:hover {
+    color: #fff;
+    border-color: rgba(237,232,226,.48);
+    background: rgba(255,255,255,.035);
+    transform: translateY(-2px);
+}
+
+.begin-btn:active {
+    transform: translateY(0);
+}
+
+/* =========================================================
+   EXPERIENCE
+========================================================= */
+
+#experience {
     position: fixed;
     inset: 0;
 
-    opacity: 0;
-    visibility: hidden;
-
-    transition:
-        opacity 1.5s ease,
-        visibility 1.5s ease;
-}
-
-.main.show {
-    opacity: 1;
-    visibility: visible;
-}
-
-
-/* =========================================================
-   ATMOSPHERIC BACKGROUND
-========================================================= */
-
-.background {
-    position: fixed;
-    inset: -70px;
-
-    z-index: -5;
-
-    background:
-        linear-gradient(
-            rgba(0,0,0,.72),
-            rgba(0,0,0,.9)
-        ),
-        url("cover.jpg") center/cover no-repeat;
-
-    filter: blur(30px);
-
-    transform: scale(1.1);
-
-    animation:
-        backgroundMove 18s ease-in-out infinite alternate;
-}
-
-@keyframes backgroundMove {
-
-    from {
-        transform: scale(1.1);
-    }
-
-    to {
-        transform: scale(1.16);
-    }
-}
-
-
-/* =========================================================
-   MAIN PAGE
-========================================================= */
-
-.page {
     width: 100%;
-    height: 100%;
-
-    padding:
-        25px
-        28px
-        max(25px, env(safe-area-inset-bottom));
-
-    display: flex;
-    flex-direction: column;
-}
-
-
-/* =========================================================
-   HEADER
-========================================================= */
-
-.topbar {
-    width: 100%;
-    max-width: 1400px;
-
-    margin: 0 auto;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    position: relative;
-
-    z-index: 10;
-}
-
-.brand {
-    font-size: 10px;
-
-    letter-spacing: 4px;
-
-    text-transform: uppercase;
-
-    color: rgba(255,255,255,.42);
-}
-
-.song-info {
-    text-align: right;
-}
-
-.song-title {
-    font-size: 17px;
-
-    letter-spacing: 1px;
-}
-
-.artist {
-    margin-top: 4px;
-
-    font-family: Arial, sans-serif;
-
-    font-size: 9px;
-
-    letter-spacing: 2px;
-
-    text-transform: uppercase;
-
-    color: rgba(255,255,255,.45);
-}
-
-
-/* =========================================================
-   VIDEO
-========================================================= */
-
-.video-area {
-    flex: 1;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 100%;
-}
-
-.video-box {
-    position: relative;
-
-    width: min(1200px, 100%);
-
-    aspect-ratio: 16 / 9;
+    height: 100dvh;
 
     overflow: hidden;
 
-    border-radius: 18px;
+    background: var(--black);
 
-    background: #000;
+    opacity: 0;
+    visibility: hidden;
 
-    box-shadow:
-        0 35px 100px rgba(0,0,0,.7),
-        0 0 0 1px rgba(255,255,255,.07);
+    transition:
+        opacity 2s ease,
+        visibility 2s ease;
+
+    z-index: 20;
 }
 
-.video-box video {
-    width: 100%;
-    height: 100%;
+#experience.active {
+    opacity: 1;
+    visibility: visible;
+}
 
-    display: block;
+/* =========================================================
+   VIDEO BACKGROUND
+========================================================= */
+
+#backgroundVideo {
+    position: absolute;
+    inset: -3%;
+
+    width: 106%;
+    height: 106%;
 
     object-fit: cover;
 
-    background: #000;
+    opacity: 0;
+
+    filter:
+        brightness(.25)
+        contrast(.88)
+        saturate(.55)
+        blur(1.2px);
+
+    transform: scale(1.025);
+
+    transition:
+        opacity 3s ease,
+        transform 20s linear;
 }
 
+#experience.active #backgroundVideo {
+    opacity: .75;
+    transform: scale(1.075);
+}
 
 /* =========================================================
-   CINEMATIC VIDEO OVERLAY
+   BACKGROUND OVERLAY
 ========================================================= */
 
-.video-box::after {
-    content: "";
-
+.video-overlay {
     position: absolute;
-
     inset: 0;
-
-    pointer-events: none;
-
-    z-index: 2;
 
     background:
         linear-gradient(
-            to bottom,
-            rgba(0,0,0,.22),
-            transparent 30%,
-            transparent 60%,
-            rgba(0,0,0,.58)
+            180deg,
+            rgba(0,0,0,.48) 0%,
+            rgba(0,0,0,.28) 45%,
+            rgba(0,0,0,.62) 100%
         );
+
+    z-index: 2;
 }
 
-
-/* =========================================================
-   LYRIC
-========================================================= */
-
-.lyric-container {
+.video-vignette {
     position: absolute;
-
     inset: 0;
 
-    z-index: 4;
+    background:
+        radial-gradient(
+            ellipse at center,
+            transparent 25%,
+            rgba(0,0,0,.28) 70%,
+            rgba(0,0,0,.78) 100%
+        );
+
+    z-index: 3;
+}
+
+/* =========================================================
+   LYRIC AREA
+========================================================= */
+
+.lyric-stage {
+    position: absolute;
+    inset: 0;
+
+    z-index: 5;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
-    padding: 35px;
-
-    pointer-events: none;
+    padding:
+        40px
+        clamp(22px, 6vw, 100px);
 }
 
 .lyric {
-    max-width: 92%;
+    width: min(1100px, 92vw);
 
-    direction: rtl;
+    color: var(--white);
 
     text-align: center;
 
-    font-family:
-        "Noto Naskh Arabic",
-        "Noto Nastaliq Urdu",
-        serif;
+    font-family: "Noto Nastaliq Urdu", serif;
 
-    font-size: 50px;
+    font-size: clamp(27px, 4vw, 53px);
 
-    font-weight: 600;
+    line-height: 2;
 
-    line-height: 1.85;
-
-    color: #fff;
+    letter-spacing: .01em;
 
     text-shadow:
-        0 3px 12px rgba(0,0,0,.95),
-        0 8px 35px rgba(0,0,0,.7);
+        0 2px 20px rgba(0,0,0,.8),
+        0 0 45px rgba(0,0,0,.45);
 
     opacity: 0;
 
+    filter: blur(12px);
+
     transform:
-        translateY(25px)
+        translateY(12px)
         scale(.96);
 
     transition:
-        opacity .7s ease,
-        transform .8s cubic-bezier(.22,.61,.36,1);
-
-    will-change:
-        opacity,
-        transform;
+        opacity 1.1s var(--ease),
+        filter 1.1s var(--ease),
+        transform 1.3s var(--ease);
 }
 
 .lyric.visible {
-    opacity: 1;
-
+    opacity: .98;
+    filter: blur(0);
     transform:
         translateY(0)
         scale(1);
 }
 
-.lyric.leaving {
-    opacity: 0;
-
-    transform:
-        translateY(-22px)
-        scale(1.015);
-}
-
-
 /* =========================================================
-   PLAY BUTTON
+   FINAL LYRIC BLACK PAUSE
 ========================================================= */
 
-.center-play {
-    position: absolute;
+#endingScreen {
+    position: fixed;
+    inset: 0;
 
-    top: 50%;
-    left: 50%;
-
-    transform:
-        translate(-50%, -50%);
-
-    width: 70px;
-    height: 70px;
-
-    z-index: 7;
-
-    border-radius: 50%;
-
-    border:
-        1px solid rgba(255,255,255,.3);
-
-    background:
-        rgba(0,0,0,.25);
-
-    backdrop-filter:
-        blur(15px);
-
-    color: white;
-
-    font-size: 22px;
-
-    cursor: pointer;
+    z-index: 30;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
+    background: #050505;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
     transition:
-        opacity .35s ease,
-        transform .35s ease,
-        background .35s ease;
+        opacity 2.5s ease,
+        visibility 2.5s ease;
 }
 
-.center-play:hover {
-    background:
-        rgba(255,255,255,.1);
-
-    transform:
-        translate(-50%, -50%)
-        scale(1.08);
+#endingScreen.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
 }
 
-.center-play.hidden {
+.scroll-indicator {
+    position: absolute;
+
+    left: 50%;
+    bottom: 8vh;
+
+    transform: translateX(-50%);
+
+    text-align: center;
+
     opacity: 0;
 
-    pointer-events: none;
+    transition: opacity 3s ease;
 }
 
+#endingScreen.show-indicator .scroll-indicator {
+    opacity: 1;
+}
+
+.scroll-arrow {
+    display: block;
+
+    margin-bottom: 12px;
+
+    color: rgba(237,232,226,.62);
+
+    font-family: Georgia, serif;
+    font-size: 20px;
+
+    animation: arrowFloat 2.6s ease-in-out infinite;
+}
+
+.scroll-text {
+    color: rgba(184,177,170,.55);
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-size: 11px;
+
+    letter-spacing: .2em;
+    text-transform: lowercase;
+}
+
+@keyframes arrowFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(6px);
+    }
+}
 
 /* =========================================================
-   CONTROLS
+   LETTER SECTION
 ========================================================= */
 
-.controls {
+#letterSection {
+    position: relative;
+
+    width: 100%;
+    min-height: 190vh;
+
+    background: #050505;
+
+    z-index: 10;
+
+    padding:
+        28vh
+        clamp(28px, 8vw, 130px)
+        20vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transition:
+        opacity 2s ease,
+        visibility 2s ease;
+}
+
+#letterSection.revealed {
+    opacity: 1;
+    visibility: visible;
+}
+
+.letter-wrap {
+    position: relative;
+
+    width: min(760px, 90vw);
+
+    min-height: 850px;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+
+    padding:
+        10vh
+        clamp(5px, 3vw, 30px);
+}
+
+.letter-line {
+    margin: 0 0 30px;
+
+    color: rgba(237,232,226,.87);
+
+    font-family: "Qwitcher Grypen", cursive;
+
+    font-size: clamp(31px, 4vw, 50px);
+
+    line-height: 1.15;
+
+    letter-spacing: .01em;
+
+    opacity: 0;
+    filter: blur(8px);
+
+    transform: translateY(25px);
+
+    transition:
+        opacity 1.8s var(--ease),
+        filter 1.8s var(--ease),
+        transform 1.8s var(--ease);
+}
+
+.letter-line.visible {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+}
+
+.letter-gap {
+    height: 35px;
+}
+
+.signature {
+    position: absolute;
+
+    right: 0;
+    bottom: 4vh;
+
+    color: rgba(237,232,226,.88);
+
+    font-family: "Qwitcher Grypen", cursive;
+
+    font-size: clamp(42px, 6vw, 68px);
+
+    line-height: 1;
+
+    transform: rotate(-4deg);
+
+    opacity: 0;
+    filter: blur(7px);
+
+    transition:
+        opacity 2s ease,
+        filter 2s ease;
+}
+
+.signature.visible {
+    opacity: 1;
+    filter: blur(0);
+}
+
+/* =========================================================
+   FINAL EMPTY SPACE
+========================================================= */
+
+.letter-end {
     position: absolute;
 
     left: 0;
     right: 0;
     bottom: 0;
 
-    z-index: 8;
+    height: 15vh;
 
-    padding:
-        20px
-        20px
-        18px;
-
-    background:
-        linear-gradient(
-            transparent,
-            rgba(0,0,0,.8)
-        );
-
-    opacity: 0;
-
-    transform:
-        translateY(8px);
-
-    transition:
-        opacity .3s ease,
-        transform .3s ease;
+    pointer-events: none;
 }
-
-.video-box:hover .controls,
-.video-box.paused .controls,
-.controls:hover {
-    opacity: 1;
-
-    transform:
-        translateY(0);
-}
-
-
-/* progress */
-
-.progress {
-    appearance: none;
-
-    width: 100%;
-
-    height: 3px;
-
-    margin-bottom: 11px;
-
-    border-radius: 20px;
-
-    background:
-        rgba(255,255,255,.25);
-
-    cursor: pointer;
-}
-
-.progress::-webkit-slider-thumb {
-    appearance: none;
-
-    width: 11px;
-    height: 11px;
-
-    border-radius: 50%;
-
-    background: white;
-}
-
-.progress::-moz-range-thumb {
-    width: 11px;
-    height: 11px;
-
-    border: none;
-
-    border-radius: 50%;
-
-    background: white;
-}
-
-
-/* control row */
-
-.control-row {
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-}
-
-.control-btn {
-    width: 34px;
-    height: 34px;
-
-    border: none;
-
-    background: transparent;
-
-    color: white;
-
-    cursor: pointer;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    font-size: 16px;
-
-    opacity: .82;
-
-    transition:
-        opacity .2s ease,
-        transform .2s ease;
-}
-
-.control-btn:hover {
-    opacity: 1;
-
-    transform:
-        scale(1.08);
-}
-
-.time {
-    font-family: Arial, sans-serif;
-
-    font-size: 10px;
-
-    color:
-        rgba(255,255,255,.7);
-
-    white-space: nowrap;
-}
-
-.volume {
-    width: 70px;
-
-    appearance: none;
-
-    height: 3px;
-
-    border-radius: 20px;
-
-    background:
-        rgba(255,255,255,.25);
-}
-
-.volume::-webkit-slider-thumb {
-    appearance: none;
-
-    width: 9px;
-    height: 9px;
-
-    border-radius: 50%;
-
-    background: white;
-}
-
-.volume::-moz-range-thumb {
-    width: 9px;
-    height: 9px;
-
-    border: none;
-
-    border-radius: 50%;
-
-    background: white;
-}
-
-.spacer {
-    flex: 1;
-}
-
 
 /* =========================================================
-   FOOTER
+   RESPONSIVE — TABLET
 ========================================================= */
 
-.footer {
-    width: 100%;
-    max-width: 1200px;
-
-    margin: 14px auto 0;
-
-    display: flex;
-
-    justify-content: space-between;
-
-    font-family: Arial, sans-serif;
-
-    font-size: 8px;
-
-    letter-spacing: 2px;
-
-    text-transform: uppercase;
-
-    color:
-        rgba(255,255,255,.3);
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 700px) {
-
-    .page {
-        padding:
-            16px
-            12px
-            max(15px, env(safe-area-inset-bottom));
-    }
-
-    .brand {
-        font-size: 8px;
-
-        letter-spacing: 2px;
-    }
-
-    .song-title {
-        font-size: 14px;
-    }
-
-    .artist {
-        font-size: 7px;
-    }
-
-    .video-box {
-        border-radius: 11px;
-
-        aspect-ratio: 16 / 10;
-    }
-
-    .lyric-container {
-        padding: 18px;
-    }
+@media (max-width: 900px) {
 
     .lyric {
-        max-width: 95%;
-
-        font-size:
-            clamp(28px, 8vw, 42px);
-
-        line-height: 1.9;
+        font-size: clamp(25px, 5vw, 42px);
+        line-height: 2;
     }
 
-    .center-play {
-        width: 58px;
-        height: 58px;
-
-        font-size: 18px;
+    .letter-wrap {
+        min-height: 760px;
     }
 
-    .controls {
-        opacity: 1;
+    .letter-line {
+        font-size: clamp(29px, 6vw, 46px);
+    }
+}
 
-        transform: none;
+/* =========================================================
+   RESPONSIVE — MOBILE
+========================================================= */
 
-        padding:
-            14px
-            11px
-            max(11px, env(safe-area-inset-bottom));
+@media (max-width: 600px) {
+
+    html,
+    body {
+        width: 100%;
+        overflow-x: hidden;
     }
 
-    .volume {
-        width: 50px;
-    }
-
-    .footer {
-        font-size: 6px;
-
-        margin-top: 9px;
+    .password-wrap {
+        width: 82vw;
     }
 
     .password-title {
-        font-size: 34px;
+        font-size: 17px;
+        margin-bottom: 29px;
     }
 
-    .password-small {
-        font-size: 8px;
-
-        letter-spacing: 3px;
+    .password-input {
+        height: 48px;
+        font-size: 15px;
     }
-}
 
+    .enter-btn {
+        margin-top: 26px;
+        height: 44px;
+        min-width: 108px;
+    }
 
-/* =========================================================
-   SMALL PHONES
-========================================================= */
+    .wish-title {
+        width: 90vw;
+        font-size: clamp(56px, 17vw, 88px);
+    }
 
-@media (max-width: 390px) {
+    .lyric-stage {
+        padding:
+            30px
+            22px
+            45px;
+    }
 
     .lyric {
-        font-size: 27px;
+        width: 92vw;
+
+        font-size: clamp(22px, 6.4vw, 31px);
+
+        line-height: 2.15;
+
+        text-shadow:
+            0 2px 18px rgba(0,0,0,.9);
     }
 
-    .volume {
-        display: none;
+    #backgroundVideo {
+        inset: -5%;
+
+        width: 110%;
+        height: 110%;
+
+        filter:
+            brightness(.22)
+            contrast(.85)
+            saturate(.45)
+            blur(1.5px);
     }
 
-    .time {
-        font-size: 9px;
+    .scroll-indicator {
+        bottom: 6vh;
+    }
+
+    .scroll-arrow {
+        font-size: 19px;
+        margin-bottom: 9px;
+    }
+
+    .scroll-text {
+        font-size: 10px;
+        letter-spacing: .17em;
+    }
+
+    #letterSection {
+        min-height: 180vh;
+
+        padding:
+            25vh
+            24px
+            17vh;
+    }
+
+    .letter-wrap {
+        width: 100%;
+        min-height: 700px;
+
+        padding:
+            6vh
+            2px;
+        }
+
+    .letter-line {
+        margin-bottom: 27px;
+
+        font-size: clamp(30px, 9vw, 43px);
+
+        line-height: 1.18;
+    }
+
+    .letter-gap {
+        height: 27px;
+    }
+
+    .signature {
+        right: 2px;
+        bottom: 3vh;
+
+        font-size: clamp(42px, 13vw, 62px);
     }
 }
-
 
 /* =========================================================
-   FULLSCREEN
+   VERY SMALL PHONES
 ========================================================= */
 
-.video-box:fullscreen {
-    width: 100vw;
-    height: 100vh;
+@media (max-width: 380px) {
 
-    border-radius: 0;
+    .lyric {
+        font-size: 21px;
+    }
+
+    .letter-line {
+        font-size: 29px;
+    }
+
+    .signature {
+        font-size: 43px;
+    }
 }
 
-.video-box:fullscreen video {
-    object-fit: contain;
-}
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
 
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+    }
+}
 </style>
 </head>
 
-
 <body>
 
+<div id="app">
 
-<!-- =======================================================
-     PASSWORD
-======================================================= -->
+    <!-- =====================================================
+         PASSWORD SCREEN
+    ====================================================== -->
 
-<section class="password-screen" id="passwordScreen">
+    <section id="passwordScreen" class="screen active">
 
-    <div class="password-content">
+        <div class="password-wrap">
 
-        <div class="password-small">
-            A private experience
+            <div class="password-title">
+                Enter Password
+            </div>
+
+            <form id="passwordForm" class="password-form">
+
+                <input
+                    id="passwordInput"
+                    class="password-input"
+                    type="password"
+                    autocomplete="off"
+                    spellcheck="false"
+                    aria-label="Password"
+                    placeholder="••••••••"
+                >
+
+                <button
+                    type="submit"
+                    class="enter-btn"
+                >
+                    Enter
+                </button>
+
+                <div
+                    id="passwordError"
+                    class="password-error"
+                    aria-live="polite"
+                >
+                    That isn't the right password.
+                </div>
+
+            </form>
+
         </div>
 
-        <h1 class="password-title">
-            Enter Password
-        </h1>
-
-        <form class="password-form" id="passwordForm">
-
-            <input
-                type="password"
-                id="passwordInput"
-                class="password-input"
-                placeholder="••••••••"
-                autocomplete="off"
-                inputmode="numeric"
-            >
-
-            <button
-                type="submit"
-                class="password-button"
-                aria-label="Enter">
-                →
-            </button>
-
-        </form>
-
-        <div
-            class="password-error"
-            id="passwordError">
-            Incorrect password
-        </div>
-
-    </div>
-
-</section>
+    </section>
 
 
-<!-- =======================================================
-     ONE LAST WISH
-======================================================= -->
+    <!-- =====================================================
+         ONE LAST WISH
+    ====================================================== -->
 
-<section class="wish-screen" id="wishScreen">
+    <section id="wishScreen" class="screen">
 
-    <div
-        class="wish-text"
-        id="wishText">
-        One Last Wish
-    </div>
+        <div class="wish-content">
 
-</section>
-
-
-<!-- =======================================================
-     MAIN
-======================================================= -->
-
-<main class="main" id="main">
-
-    <div class="background"></div>
-
-    <div class="page">
-
-
-        <!-- HEADER -->
-
-        <header class="topbar">
-
-            <div class="brand">
+            <div class="wish-title qwitcher-grypen-regular">
                 One Last Wish
             </div>
 
-            <div class="song-info">
+        </div>
 
-                <div class="song-title">
-                    Theher Ja
-                </div>
-
-                <div class="artist">
-                    Garvit Soni · Priyansh Srivastava
-                </div>
-
-            </div>
-
-        </header>
+    </section>
 
 
-        <!-- VIDEO -->
+    <!-- =====================================================
+         BEGIN
+    ====================================================== -->
 
-        <section class="video-area">
+    <section id="beginScreen" class="screen">
+
+        <div class="begin-wrap">
+
+            <button
+                id="beginButton"
+                class="begin-btn"
+                type="button"
+            >
+                Begin
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CINEMATIC EXPERIENCE
+    ====================================================== -->
+
+    <main id="experience">
+
+        <video
+            id="backgroundVideo"
+            src="song.mp4"
+            poster="cover.jpg"
+            playsinline
+            preload="auto"
+            aria-hidden="true"
+        ></video>
+
+        <div class="video-overlay"></div>
+        <div class="video-vignette"></div>
+
+        <div class="lyric-stage">
+            <div
+                id="lyric"
+                class="lyric noto-nastaliq-urdu"
+            ></div>
+        </div>
+
+    </main>
+
+
+    <!-- =====================================================
+         ENDING / SCROLL INDICATOR
+    ====================================================== -->
+
+    <section id="endingScreen">
+
+        <div class="scroll-indicator">
+
+            <span class="scroll-arrow">↓</span>
+
+            <span class="scroll-text">
+                scroll down
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FINAL LETTER
+    ====================================================== -->
+
+    <section id="letterSection">
+
+        <div class="letter-wrap">
+
+            <p class="letter-line">
+                Maybe some things are better left unsaid.
+            </p>
+
+            <p class="letter-line">
+                Maybe some feelings are meant to stay
+            </p>
+
+            <p class="letter-line">
+                between the words,
+            </p>
+
+            <p class="letter-line">
+                the silence,
+            </p>
+
+            <p class="letter-line">
+                and the memories.
+            </p>
+
+            <div class="letter-gap"></div>
+
+            <p class="letter-line">
+                So this isn't goodbye.
+            </p>
+
+            <p class="letter-line">
+                Just one last wish...
+            </p>
+
+            <p class="letter-line">
+                Stay.
+            </p>
 
             <div
-                class="video-box paused"
-                id="videoBox">
-
-                <video
-                    id="video"
-                    playsinline
-                    preload="metadata"
-                    poster="cover.jpg">
-
-                    <source
-                        src="song.mp4"
-                        type="video/mp4">
-
-                    Your browser does not support video.
-                </video>
-
-
-                <!-- ONLY ONE LYRIC EXISTS HERE -->
-
-                <div class="lyric-container">
-
-                    <div
-                        class="lyric"
-                        id="lyric">
-                    </div>
-
-                </div>
-
-
-                <!-- CENTER PLAY -->
-
-                <button
-                    class="center-play"
-                    id="centerPlay"
-                    aria-label="Play">
-
-                    <span id="centerPlayIcon">
-                        ▶
-                    </span>
-
-                </button>
-
-
-                <!-- CONTROLS -->
-
-                <div class="controls">
-
-                    <input
-                        type="range"
-                        id="progress"
-                        class="progress"
-                        min="0"
-                        max="100"
-                        value="0"
-                        step="0.01"
-                    >
-
-                    <div class="control-row">
-
-                        <button
-                            class="control-btn"
-                            id="playBtn">
-                            ▶
-                        </button>
-
-                        <span
-                            class="time"
-                            id="currentTime">
-                            00:00
-                        </span>
-
-                        <span
-                            class="time">
-                            /
-                        </span>
-
-                        <span
-                            class="time"
-                            id="duration">
-                            00:00
-                        </span>
-
-                        <button
-                            class="control-btn"
-                            id="muteBtn">
-                            🔊
-                        </button>
-
-                        <input
-                            type="range"
-                            class="volume"
-                            id="volume"
-                            min="0"
-                            max="1"
-                            value="1"
-                            step="0.01"
-                        >
-
-                        <div class="spacer"></div>
-
-                        <button
-                            class="control-btn"
-                            id="fullscreenBtn">
-                            ⛶
-                        </button>
-
-                    </div>
-
-                </div>
-
+                id="signature"
+                class="signature qwitcher-grypen-regular"
+            >
+                Isba Eman
             </div>
 
-        </section>
+        </div>
 
+        <div class="letter-end"></div>
 
-        <!-- FOOTER -->
+    </section>
 
-        <footer class="footer">
-
-            <span>
-                A Song In Motion
-            </span>
-
-            <span>
-                Isba Eman
-            </span>
-
-        </footer>
-
-    </div>
-
-</main>
+</div>
 
 
 <script>
-
 /* =========================================================
-   PASSWORD
+   CONFIGURATION
 ========================================================= */
 
-const CORRECT_PASSWORD = "2322007";
+const PASSWORD = "2322007";
+
+/*
+    EDIT YOUR LYRICS AND TIMES HERE.
+
+    "time" = exact second in song.mp4
+*/
+const lyrics = [
+    {
+        time: 0,
+        text: "Chhod ke jaane ki baatein kiya na karo"
+    },
+
+    {
+        time: 4,
+        text: "Haal-e-dil samjho zara, vaade kiya na karo"
+    },
+
+    {
+        time: 9,
+        text: "Khamoshiyon mein bhi alfaaz tu chun lena"
+    },
+
+    {
+        time: 14,
+        text: "Baahon mein jab bharoon dhadkan meri sun lena"
+    },
+
+    {
+        time: 19,
+        text: "Ye aankhein meri kehti hain ke tu theher ja"
+    },
+
+    {
+        time: 24,
+        text: "Adhoora sa yeh ghar lagega tere bina"
+    },
+
+    {
+        time: 29,
+        text: "Ye aankhein meri kehti hain ke tu theher ja"
+    },
+
+    {
+        time: 34,
+        text: "Adhoora sa yeh ghar lagega tere bina"
+    },
+
+    {
+        time: 39,
+        text: "Behti hawaaon ko rok nahin, par saanson mein bhar sakte ho"
+    },
+
+    {
+        time: 46,
+        text: "Dil se nikalta na koi kisike, par khone se darr sakte ho"
+    },
+
+    {
+        time: 53,
+        text: "Kehne ko kitna bacha, kaise karoon main bayaan"
+    },
+
+    {
+        time: 60,
+        text: "Hum milenge phir se kabhi, aasmaan pe hogi jagah"
+    },
+
+    {
+        time: 67,
+        text: "Ye aankhein meri kehti hain ke tu theher ja"
+    },
+
+    {
+        time: 72,
+        text: "Adhoora sa yeh ghar lagega tere bina"
+    },
+
+    {
+        time: 77,
+        text: "Ye aankhein meri kehti hain ke tu theher ja"
+    },
+
+    {
+        time: 82,
+        text: "Adhoora sa yeh ghar lagega tere bina"
+    }
+];
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
 
 const passwordScreen =
     document.getElementById("passwordScreen");
@@ -1189,772 +1234,514 @@ const passwordError =
 const wishScreen =
     document.getElementById("wishScreen");
 
-const wishText =
-    document.getElementById("wishText");
+const beginScreen =
+    document.getElementById("beginScreen");
 
-const main =
-    document.getElementById("main");
+const beginButton =
+    document.getElementById("beginButton");
 
-
-passwordInput.focus();
-
-
-passwordForm.addEventListener(
-    "submit",
-    function(event) {
-
-        event.preventDefault();
-
-        const entered =
-            passwordInput.value.trim();
-
-        if (entered === CORRECT_PASSWORD) {
-
-            passwordError.classList.remove("show");
-
-            passwordScreen.classList.add("hidden");
-
-            setTimeout(
-                () => {
-
-                    wishScreen.classList.add("show");
-
-                },
-                500
-            );
-
-
-            /*
-               "One Last Wish" stays visible
-               for a cinematic moment.
-            */
-
-            setTimeout(
-                () => {
-
-                    wishText.classList.add("fade-out");
-
-                },
-                2600
-            );
-
-
-            /*
-               Then reveal the actual
-               video experience.
-            */
-
-            setTimeout(
-                () => {
-
-                    wishScreen.classList.remove("show");
-
-                    main.classList.add("show");
-
-                    /*
-                       Start video after user has
-                       interacted with password screen.
-                    */
-
-                    video.play().catch(
-                        () => {
-
-                            /*
-                               If browser blocks autoplay,
-                               user can press play.
-                            */
-
-                        }
-                    );
-
-                },
-                3600
-            );
-
-        } else {
-
-            passwordError.textContent =
-                "Incorrect password";
-
-            passwordError.classList.add("show");
-
-            passwordInput.value = "";
-
-            passwordInput.focus();
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   VIDEO
-========================================================= */
+const experience =
+    document.getElementById("experience");
 
 const video =
-    document.getElementById("video");
+    document.getElementById("backgroundVideo");
 
-const videoBox =
-    document.getElementById("videoBox");
-
-const playBtn =
-    document.getElementById("playBtn");
-
-const centerPlay =
-    document.getElementById("centerPlay");
-
-const centerPlayIcon =
-    document.getElementById("centerPlayIcon");
-
-const progress =
-    document.getElementById("progress");
-
-const currentTimeEl =
-    document.getElementById("currentTime");
-
-const durationEl =
-    document.getElementById("duration");
-
-const volume =
-    document.getElementById("volume");
-
-const muteBtn =
-    document.getElementById("muteBtn");
-
-const fullscreenBtn =
-    document.getElementById("fullscreenBtn");
-
-const lyric =
+const lyricElement =
     document.getElementById("lyric");
 
+const endingScreen =
+    document.getElementById("endingScreen");
 
-/* =========================================================
-   LYRICS
-=========================================================
+const letterSection =
+    document.getElementById("letterSection");
 
-   CHANGE ONLY THE "time" VALUES TO MATCH
-   YOUR ACTUAL SONG.
+const letterLines =
+    document.querySelectorAll(".letter-line");
 
-========================================================= */
-
-const lyrics = [
-
-    {
-        time: 0,
-        text: "چھوڑ کے جانے کی باتیں کیا نہ کرو"
-    },
-
-    {
-        time: 4,
-        text: "حالِ دل سمجھو ذرا، وعدے کیا نہ کرو"
-    },
-
-    {
-        time: 8,
-        text: "چھوڑ کے جانے کی باتیں کیا نہ کرو"
-    },
-
-    {
-        time: 12,
-        text: "حالِ دل سمجھو ذرا، وعدے کیا نہ کرو"
-    },
-
-    {
-        time: 16,
-        text: "خاموشیوں میں بھی الفاظ تُو چُن لینا"
-    },
-
-    {
-        time: 21,
-        text: "باہوں میں جب بھروں دھڑکن میری سُن لینا"
-    },
-
-    {
-        time: 26,
-        text: "یہ آنکھیں میری کہتی ہیں کہ تُو ٹھہر جا"
-    },
-
-    {
-        time: 31,
-        text: "ادھورا سا یہ گھر لگے گا تیرے بنا"
-    },
-
-    {
-        time: 36,
-        text: "یہ آنکھیں میری کہتی ہیں کہ تُو ٹھہر جا"
-    },
-
-    {
-        time: 41,
-        text: "ادھورا سا یہ گھر لگے گا تیرے بنا"
-    },
-
-    {
-        time: 48,
-        text: "بہتی ہواؤں کو روک نہیں، پر سانسوں میں بھر سکتے ہو"
-    },
-
-    {
-        time: 55,
-        text: "دل سے نکلتا نہ کوئی کسی کے، پر کھونے سے ڈر سکتے ہو"
-    },
-
-    {
-        time: 63,
-        text: "کہنے کو کتنا بچا، کیسے کروں میں بیاں"
-    },
-
-    {
-        time: 70,
-        text: "ہم ملیں گے پھر سے کبھی، آسمان پہ ہوگی جگہ"
-    },
-
-    {
-        time: 78,
-        text: "یہ آنکھیں میری کہتی ہیں کہ تُو ٹھہر جا"
-    },
-
-    {
-        time: 83,
-        text: "ادھورا سا یہ گھر لگے گا تیرے بنا"
-    },
-
-    {
-        time: 88,
-        text: "یہ آنکھیں میری کہتی ہیں کہ تُو ٹھہر جا"
-    },
-
-    {
-        time: 93,
-        text: "ادھورا سا یہ گھر لگے گا تیرے بنا"
-    }
-
-];
+const signature =
+    document.getElementById("signature");
 
 
 /* =========================================================
-   PLAY / PAUSE
+   STATE
 ========================================================= */
 
-function togglePlay() {
+let currentLyricIndex = -1;
+let experienceStarted = false;
+let endingStarted = false;
 
-    if (video.paused) {
 
-        video.play();
+/* =========================================================
+   PASSWORD
+========================================================= */
+
+passwordForm.addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+    const enteredPassword =
+        passwordInput.value.trim();
+
+    if (enteredPassword === PASSWORD) {
+
+        passwordError.classList.remove("show");
+
+        passwordScreen.classList.remove("active");
+
+        setTimeout(() => {
+
+            wishScreen.classList.add("active");
+
+            requestAnimationFrame(() => {
+                wishScreen.classList.add("show-title");
+            });
+
+            /*
+                Hold "One Last Wish" for a cinematic pause.
+            */
+            setTimeout(() => {
+
+                wishScreen.classList.remove("show-title");
+
+                setTimeout(() => {
+
+                    wishScreen.classList.remove("active");
+
+                    setTimeout(() => {
+                        beginScreen.classList.add("active");
+                    }, 900);
+
+                }, 2200);
+
+            }, 3900);
+
+        }, 1000);
 
     } else {
 
-        video.pause();
+        passwordError.classList.add("show");
 
+        passwordInput.value = "";
+
+        passwordInput.focus();
+
+        /*
+            Small cinematic shake.
+        */
+        passwordInput.animate(
+            [
+                { transform: "translateX(0)" },
+                { transform: "translateX(-5px)" },
+                { transform: "translateX(5px)" },
+                { transform: "translateX(-3px)" },
+                { transform: "translateX(0)" }
+            ],
+            {
+                duration: 380,
+                easing: "ease-out"
+            }
+        );
     }
-
-}
-
-
-playBtn.addEventListener(
-    "click",
-    togglePlay
-);
-
-
-centerPlay.addEventListener(
-    "click",
-    togglePlay
-);
+});
 
 
 /* =========================================================
-   PLAY STATE
+   BEGIN EXPERIENCE
 ========================================================= */
 
-video.addEventListener(
-    "play",
-    () => {
+beginButton.addEventListener("click", async function() {
 
-        playBtn.textContent = "❚❚";
+    if (experienceStarted) return;
 
-        centerPlayIcon.textContent = "❚❚";
+    experienceStarted = true;
 
-        centerPlay.classList.add("hidden");
+    /*
+        Fade Begin screen away.
+    */
 
-        videoBox.classList.remove("paused");
+    beginScreen.classList.remove("active");
 
-    }
-);
+    setTimeout(() => {
 
+        experience.classList.add("active");
 
-video.addEventListener(
-    "pause",
-    () => {
+        /*
+            Start local video/audio.
+            Browser allows this because it happens
+            directly inside the user's click.
+        */
 
-        playBtn.textContent = "▶";
+        video.currentTime = 0;
 
-        centerPlayIcon.textContent = "▶";
+        const playPromise = video.play();
 
-        centerPlay.classList.remove("hidden");
+        if (playPromise !== undefined) {
 
-        videoBox.classList.add("paused");
+            playPromise.catch(() => {
+                /*
+                    If the browser blocks playback,
+                    the user can simply click again.
+                */
+            });
+        }
 
-    }
-);
+    }, 850);
+
+});
 
 
 /* =========================================================
-   TIME
+   LYRIC ENGINE
 ========================================================= */
 
-function formatTime(seconds) {
-
-    if (!Number.isFinite(seconds)) {
-        return "00:00";
-    }
-
-    const minutes =
-        Math.floor(seconds / 60);
-
-    const secondsPart =
-        Math.floor(seconds % 60);
-
-    return (
-        String(minutes).padStart(2, "0")
-        + ":"
-        +
-        String(secondsPart).padStart(2, "0")
-    );
-
-}
-
-
-/* =========================================================
-   VIDEO METADATA
-========================================================= */
-
-video.addEventListener(
-    "loadedmetadata",
-    () => {
-
-        durationEl.textContent =
-            formatTime(video.duration);
-
-    }
-);
-
-
-/* =========================================================
-   FIND CURRENT LYRIC
-========================================================= */
-
-function findCurrentLyric(time) {
+function getLyricIndex(currentTime) {
 
     let index = -1;
 
-    for (
-        let i = 0;
-        i < lyrics.length;
-        i++
-    ) {
+    for (let i = 0; i < lyrics.length; i++) {
 
-        if (time >= lyrics[i].time) {
-
+        if (currentTime >= lyrics[i].time) {
             index = i;
-
         } else {
-
             break;
-
         }
-
     }
 
     return index;
-
 }
 
 
-/* =========================================================
-   LYRIC STATE
-========================================================= */
+function showLyric(index) {
 
-let currentLyric = -1;
-
-let lyricChangeTimer;
-
-
-/* =========================================================
-   CHANGE LYRIC
-========================================================= */
-
-function changeLyric(index) {
-
-    if (
-        index < 0
-        ||
-        index >= lyrics.length
-    ) {
-
-        hideLyric();
-
+    if (index < 0 || index >= lyrics.length) {
         return;
-
     }
 
-
-    clearTimeout(lyricChangeTimer);
-
-
     /*
-       First fade current lyric away.
+        Fade old lyric away first.
     */
 
-    lyric.classList.remove("visible");
+    lyricElement.classList.remove("visible");
 
-    lyric.classList.add("leaving");
+    setTimeout(() => {
 
+        lyricElement.textContent =
+            lyrics[index].text;
 
-    /*
-       Then replace it with the next lyric.
-    */
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                lyricElement.classList.add("visible");
+            });
+        });
 
-    lyricChangeTimer =
-        setTimeout(
-            () => {
-
-                lyric.textContent =
-                    lyrics[index].text;
-
-                lyric.classList.remove("leaving");
-
-                void lyric.offsetWidth;
-
-                lyric.classList.add("visible");
-
-            },
-            250
-        );
-
+    }, 450);
 }
 
 
-/* =========================================================
-   HIDE LYRIC
-========================================================= */
+function syncLyrics() {
 
-function hideLyric() {
+    if (!experienceStarted || endingStarted) {
+        return;
+    }
 
-    clearTimeout(lyricChangeTimer);
-
-    lyric.classList.remove("visible");
-
-    lyric.classList.add("leaving");
-
-}
-
-
-/* =========================================================
-   SYNC LYRICS
-========================================================= */
-
-function updateLyrics() {
+    const currentTime = video.currentTime;
 
     const index =
-        findCurrentLyric(video.currentTime);
+        getLyricIndex(currentTime);
 
-    if (index !== currentLyric) {
+    if (index !== currentLyricIndex) {
 
-        currentLyric = index;
+        currentLyricIndex = index;
 
-        changeLyric(index);
-
+        if (index >= 0) {
+            showLyric(index);
+        }
     }
 
+    /*
+        Detect final lyric.
+    */
+
+    if (
+        currentLyricIndex === lyrics.length - 1 &&
+        currentTime >= lyrics[lyrics.length - 1].time
+    ) {
+
+        const finalDuration =
+            video.duration && isFinite(video.duration)
+                ? video.duration
+                : lyrics[lyrics.length - 1].time + 8;
+
+        /*
+            Let final lyric breathe before ending.
+        */
+
+        if (
+            currentTime >=
+            Math.min(
+                finalDuration - 1.2,
+                lyrics[lyrics.length - 1].time + 5
+            )
+        ) {
+            beginEnding();
+        }
+    }
 }
 
 
 /* =========================================================
-   VIDEO TIME UPDATE
+   MEDIA TIME SYNC
 ========================================================= */
 
 video.addEventListener(
     "timeupdate",
-    () => {
-
-        if (video.duration) {
-
-            progress.value =
-                (
-                    video.currentTime
-                    /
-                    video.duration
-                ) * 100;
-
-        }
-
-        currentTimeEl.textContent =
-            formatTime(video.currentTime);
-
-        updateLyrics();
-
-    }
+    syncLyrics
 );
-
-
-/* =========================================================
-   SEEK
-========================================================= */
-
-progress.addEventListener(
-    "input",
-    () => {
-
-        if (!video.duration) {
-            return;
-        }
-
-        video.currentTime =
-            (
-                Number(progress.value)
-                /
-                100
-            )
-            *
-            video.duration;
-
-        updateLyrics();
-
-    }
-);
-
 
 video.addEventListener(
     "seeking",
-    () => {
+    function() {
 
-        updateLyrics();
+        if (!experienceStarted) return;
 
+        const index =
+            getLyricIndex(video.currentTime);
+
+        currentLyricIndex = index;
+
+        if (index >= 0) {
+
+            lyricElement.textContent =
+                lyrics[index].text;
+
+            lyricElement.classList.add("visible");
+        } else {
+
+            lyricElement.textContent = "";
+
+            lyricElement.classList.remove("visible");
+        }
     }
 );
 
 
 /* =========================================================
-   VOLUME
-========================================================= */
-
-volume.addEventListener(
-    "input",
-    () => {
-
-        video.volume =
-            Number(volume.value);
-
-        video.muted = false;
-
-        updateMuteIcon();
-
-    }
-);
-
-
-/* =========================================================
-   MUTE
-========================================================= */
-
-muteBtn.addEventListener(
-    "click",
-    () => {
-
-        video.muted =
-            !video.muted;
-
-        updateMuteIcon();
-
-    }
-);
-
-
-function updateMuteIcon() {
-
-    if (
-        video.muted
-        ||
-        video.volume === 0
-    ) {
-
-        muteBtn.textContent = "🔇";
-
-    } else {
-
-        muteBtn.textContent = "🔊";
-
-    }
-
-}
-
-
-/* =========================================================
-   FULLSCREEN
-========================================================= */
-
-fullscreenBtn.addEventListener(
-    "click",
-    async () => {
-
-        try {
-
-            if (!document.fullscreenElement) {
-
-                await videoBox.requestFullscreen();
-
-            } else {
-
-                await document.exitFullscreen();
-
-            }
-
-        } catch (error) {
-
-            console.log(error);
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   DOUBLE CLICK
-========================================================= */
-
-video.addEventListener(
-    "dblclick",
-    async () => {
-
-        try {
-
-            if (!document.fullscreenElement) {
-
-                await videoBox.requestFullscreen();
-
-            } else {
-
-                await document.exitFullscreen();
-
-            }
-
-        } catch (error) {
-
-            console.log(error);
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   KEYBOARD
-========================================================= */
-
-document.addEventListener(
-    "keydown",
-    (event) => {
-
-        if (
-            event.target.tagName === "INPUT"
-        ) {
-            return;
-        }
-
-
-        if (event.code === "Space") {
-
-            event.preventDefault();
-
-            togglePlay();
-
-        }
-
-
-        if (event.code === "ArrowRight") {
-
-            video.currentTime =
-                Math.min(
-                    video.duration || 0,
-                    video.currentTime + 5
-                );
-
-            updateLyrics();
-
-        }
-
-
-        if (event.code === "ArrowLeft") {
-
-            video.currentTime =
-                Math.max(
-                    0,
-                    video.currentTime - 5
-                );
-
-            updateLyrics();
-
-        }
-
-
-        if (
-            event.key.toLowerCase()
-            ===
-            "m"
-        ) {
-
-            video.muted =
-                !video.muted;
-
-            updateMuteIcon();
-
-        }
-
-
-        if (
-            event.key.toLowerCase()
-            ===
-            "f"
-        ) {
-
-            fullscreenBtn.click();
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   VIDEO END
+   MEDIA END
 ========================================================= */
 
 video.addEventListener(
     "ended",
-    () => {
-
-        hideLyric();
-
-        currentLyric = -1;
-
+    function() {
+        beginEnding();
     }
 );
 
 
 /* =========================================================
-   INITIAL
+   FINAL LYRIC → BLACK
 ========================================================= */
 
-video.volume = 1;
+function beginEnding() {
 
-volume.value = 1;
+    if (endingStarted) return;
 
-updateMuteIcon();
+    endingStarted = true;
 
+    lyricElement.classList.remove("visible");
+
+    setTimeout(() => {
+
+        /*
+            Stop media quietly.
+        */
+
+        video.pause();
+
+        /*
+            Fade cinematic experience away.
+        */
+
+        experience.classList.remove("active");
+
+        setTimeout(() => {
+
+            endingScreen.classList.add("active");
+
+            /*
+                A few seconds of almost complete blackness.
+            */
+
+            setTimeout(() => {
+
+                endingScreen.classList.add(
+                    "show-indicator"
+                );
+
+            }, 2800);
+
+        }, 1700);
+
+    }, 1300);
+}
+
+
+/* =========================================================
+   SCROLL → LETTER
+========================================================= */
+
+let letterOpened = false;
+
+function openLetter() {
+
+    if (letterOpened) return;
+
+    const scrollPosition =
+        window.scrollY ||
+        window.pageYOffset;
+
+    /*
+        Only allow opening once the ending
+        section is actually reached.
+    */
+
+    if (scrollPosition < window.innerHeight * .55) {
+        return;
+    }
+
+    letterOpened = true;
+
+    endingScreen.classList.remove("active");
+
+    setTimeout(() => {
+
+        letterSection.classList.add("revealed");
+
+        /*
+            Scroll naturally into the letter.
+        */
+
+        setTimeout(() => {
+
+            letterSection.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        }, 350);
+
+    }, 700);
+}
+
+
+window.addEventListener(
+    "scroll",
+    function() {
+
+        if (!endingStarted || letterOpened) {
+            return;
+        }
+
+        /*
+            Once the user starts moving down,
+            reveal the letter.
+        */
+
+        if (window.scrollY > window.innerHeight * .25) {
+            openLetter();
+        }
+    },
+    { passive: true }
+);
+
+
+/* =========================================================
+   LETTER SCROLL ANIMATION
+========================================================= */
+
+const letterObserver =
+    new IntersectionObserver(
+        (entries) => {
+
+            entries.forEach(entry => {
+
+                if (entry.isIntersecting) {
+
+                    entry.target.classList.add(
+                        "visible"
+                    );
+
+                    letterObserver.unobserve(
+                        entry.target
+                    );
+                }
+            });
+
+        },
+        {
+            threshold: .25,
+            rootMargin: "0px 0px -8% 0px"
+        }
+    );
+
+
+letterLines.forEach(line => {
+    letterObserver.observe(line);
+});
+
+
+const signatureObserver =
+    new IntersectionObserver(
+        (entries) => {
+
+            entries.forEach(entry => {
+
+                if (entry.isIntersecting) {
+
+                    signature.classList.add(
+                        "visible"
+                    );
+
+                    signatureObserver.unobserve(
+                        signature
+                    );
+                }
+            });
+
+        },
+        {
+            threshold: .5
+        }
+    );
+
+
+signatureObserver.observe(signature);
+
+
+/* =========================================================
+   KEYBOARD ENTER SUPPORT
+========================================================= */
+
+passwordInput.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Enter") {
+            passwordForm.requestSubmit();
+        }
+    }
+);
+
+
+/* =========================================================
+   PREVENT ACCIDENTAL CONTEXT MENU ON EXPERIENCE
+========================================================= */
+
+experience.addEventListener(
+    "contextmenu",
+    function(event) {
+        event.preventDefault();
+    }
+);
 </script>
 
 </body>
