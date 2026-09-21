@@ -389,18 +389,24 @@ body {
     width: min(1100px, 92vw);
     color: var(--white);
     text-align: center;
+    direction: rtl;
+    unicode-bidi: plaintext;
+
     font-family: "Noto Nastaliq Urdu", serif;
     font-size: clamp(27px, 4vw, 53px);
     line-height: 2;
-    letter-spacing: .01em;
+
     text-shadow:
         0 2px 20px rgba(0,0,0,.8),
         0 0 45px rgba(0,0,0,.45);
+
     opacity: 0;
     filter: blur(12px);
+
     transform:
         translateY(12px)
         scale(.96);
+
     transition:
         opacity 1.1s var(--ease),
         filter 1.1s var(--ease),
