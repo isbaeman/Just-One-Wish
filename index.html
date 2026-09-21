@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en" class="locked">
 
@@ -254,6 +255,7 @@ body {
 #beginScreen {
     z-index: 35;
 }
+
 .begin-btn {
     border: 1px solid rgba(237,232,226,.23);
     background: rgba(255,255,255,.012);
@@ -346,7 +348,6 @@ body {
     }
 }
 
-/* Soft pool of darkness so the lyrics always stay legible. */
 .lyric-scrim {
     position: absolute;
     inset: 0;
@@ -361,7 +362,6 @@ body {
         );
 }
 
-/* The video now only carries the audio. */
 #backgroundVideo {
     position: absolute;
     left: 0;
@@ -491,6 +491,53 @@ body {
     50%      { transform: translateY(6px); }
 }
 
+/* ---------- NEW: CLICK TO READ ---------- */
+
+.read-btn {
+    display: block;
+    margin: 26px auto 0;
+    min-width: 145px;
+    height: 44px;
+    padding: 0 24px;
+    border: 1px solid rgba(237,232,226,.20);
+    border-radius: 999px;
+    background: rgba(255,255,255,.012);
+    color: rgba(237,232,226,.78);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 11px;
+    letter-spacing: .18em;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(8px);
+    transition:
+        opacity 1.5s ease,
+        transform .6s var(--ease),
+        color .45s ease,
+        border-color .45s ease,
+        background .45s ease,
+        box-shadow .45s ease;
+    pointer-events: none;
+}
+
+#endingScreen.show-indicator .read-btn {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition-delay: .35s;
+}
+
+.read-btn:hover {
+    color: var(--white);
+    border-color: rgba(237,232,226,.44);
+    background: rgba(255,255,255,.035);
+    box-shadow: 0 8px 28px rgba(0,0,0,.35);
+    transform: translateY(-2px);
+}
+
+.read-btn:active {
+    transform: translateY(0) scale(.97);
+}
+
 /* ---------- SCROLL HOST + LETTER ---------- */
 
 #scrollHost {
@@ -590,7 +637,9 @@ body {
 }
 
 @media (max-width: 600px) {
-    .password-wrap { width: 82vw; }
+    .password-wrap {
+        width: 82vw;
+    }
 
     .password-title {
         font-size: 17px;
@@ -613,6 +662,10 @@ body {
         font-size: clamp(56px, 17vw, 88px);
     }
 
+    /*
+       Mobile keeps the exact same interaction structure as desktop.
+       Only dimensions are reduced enough to fit the screen.
+    */
     .lyric-stage {
         padding:
             calc(30px + env(safe-area-inset-top, 0px))
@@ -627,11 +680,6 @@ body {
         text-shadow: 0 2px 18px rgba(0,0,0,.9);
     }
 
-    /*
-       The picture is portrait and the rose sits at its edge,
-       so on phones it is fitted whole instead of cropped.
-       Its own black backdrop blends into the page.
-    */
     #backgroundImage {
         object-fit: contain;
         object-position: center 46%;
@@ -656,7 +704,9 @@ body {
             );
     }
 
-    .scroll-indicator { bottom: 6vh; }
+    .scroll-indicator {
+        bottom: 6vh;
+    }
 
     .scroll-arrow {
         font-size: 19px;
@@ -664,6 +714,14 @@ body {
     }
 
     .scroll-text {
+        font-size: 10px;
+        letter-spacing: .17em;
+    }
+
+    .read-btn {
+        min-width: 142px;
+        height: 43px;
+        margin-top: 23px;
         font-size: 10px;
         letter-spacing: .17em;
     }
@@ -678,7 +736,9 @@ body {
         line-height: 1.18;
     }
 
-    .letter-gap { height: 27px; }
+    .letter-gap {
+        height: 27px;
+    }
 
     .signature {
         margin-top: 12vh;
@@ -687,9 +747,21 @@ body {
 }
 
 @media (max-width: 380px) {
-    .lyric { font-size: 21px; }
-    .letter-line { font-size: 29px; }
-    .signature { font-size: 43px; }
+    .lyric {
+        font-size: 21px;
+    }
+
+    .letter-line {
+        font-size: 29px;
+    }
+
+    .signature {
+        font-size: 43px;
+    }
+
+    .read-btn {
+        min-width: 135px;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -776,10 +848,19 @@ body {
 
 
     <section id="endingScreen">
+
         <div class="scroll-indicator">
+
             <span class="scroll-arrow">↓</span>
+
             <span class="scroll-text">scroll down</span>
+
+            <button id="readButton" class="read-btn" type="button">
+                CLICK TO READ
+            </button>
+
         </div>
+
     </section>
 
 
@@ -839,14 +920,7 @@ const lyrics = [
     { time: 51, text: "ادھورا سا یہ گھر لگے گا تیرے بنا" }
 ];
 
-/*
-   The song starts the moment "Begin" is pressed.
-   The first lyric waits this many seconds after that.
-   Change 5 to any number to move all lines together.
-*/
 const LYRIC_START_DELAY = 10;
-
-/* How long the last line stays before the screen goes black. */
 const TAIL_SECONDS = 7;
 
 const passwordScreen = document.getElementById("passwordScreen");
@@ -860,6 +934,7 @@ const experience     = document.getElementById("experience");
 const video          = document.getElementById("backgroundVideo");
 const lyricElement   = document.getElementById("lyric");
 const endingScreen   = document.getElementById("endingScreen");
+const readButton     = document.getElementById("readButton");
 const letterSection  = document.getElementById("letterSection");
 const letterLines    = document.querySelectorAll(".letter-line");
 const signature      = document.getElementById("signature");
@@ -883,8 +958,9 @@ passwordForm.addEventListener("submit", function (event) {
         passwordError.classList.remove("show");
         passwordScreen.classList.remove("active");
 
-        /* Warm the media file up while the title plays. */
-        try { video.load(); } catch (e) {}
+        try {
+            video.load();
+        } catch (e) {}
 
         setTimeout(() => {
 
@@ -940,10 +1016,6 @@ beginButton.addEventListener("click", function () {
     if (experienceStarted) return;
     experienceStarted = true;
 
-    /*
-       play() must be called SYNCHRONOUSLY inside this click,
-       otherwise browsers treat it as autoplay and block it.
-    */
     let played = false;
 
     try {
@@ -953,9 +1025,15 @@ beginButton.addEventListener("click", function () {
     const playPromise = video.play();
 
     if (playPromise && typeof playPromise.then === "function") {
+
         playPromise
-            .then(() => { played = true; })
-            .catch(() => { startFallbackClock(); });
+            .then(() => {
+                played = true;
+            })
+            .catch(() => {
+                startFallbackClock();
+            });
+
     } else {
         played = true;
     }
@@ -966,11 +1044,12 @@ beginButton.addEventListener("click", function () {
         experience.classList.add("active");
     }, 850);
 
-    /* Safety net: if the video never actually starts, run on a timer. */
     setTimeout(() => {
+
         if (video.paused || video.currentTime === 0) {
             startFallbackClock();
         }
+
     }, 1800);
 
     startLoop();
@@ -978,43 +1057,73 @@ beginButton.addEventListener("click", function () {
 });
 
 video.addEventListener("error", startFallbackClock);
+
 video.addEventListener("stalled", function () {
-    if (experienceStarted && video.currentTime === 0) startFallbackClock();
+
+    if (experienceStarted && video.currentTime === 0) {
+        startFallbackClock();
+    }
+
 });
 
 function startFallbackClock() {
+
     if (usingFallbackClock || endingStarted) return;
+
     usingFallbackClock = true;
     clockStart = performance.now();
+
 }
 
 
 /* ============================ CLOCK ============================ */
 
 function getTime() {
+
     if (usingFallbackClock) {
         return (performance.now() - clockStart) / 1000;
     }
+
     return video.currentTime;
+
 }
 
 function getLyricIndex(t) {
-    // Scale the supplied lyric timeline to the actual audio duration.
-    // This keeps the final lyric near the end of the track instead of
-    // making the experience end long before the song finishes.
+
     const lastLyricTime = lyrics[lyrics.length - 1].time;
-    const audioDuration = Number.isFinite(video.duration) && video.duration > 0
-        ? video.duration
-        : lastLyricTime;
-    const usableDuration = Math.max(0, audioDuration - LYRIC_START_DELAY - TAIL_SECONDS);
-    const scale = lastLyricTime > 0 ? usableDuration / lastLyricTime : 1;
+
+    const audioDuration =
+        Number.isFinite(video.duration) && video.duration > 0
+            ? video.duration
+            : lastLyricTime;
+
+    const usableDuration =
+        Math.max(
+            0,
+            audioDuration - LYRIC_START_DELAY - TAIL_SECONDS
+        );
+
+    const scale =
+        lastLyricTime > 0
+            ? usableDuration / lastLyricTime
+            : 1;
+
     const shifted = t - LYRIC_START_DELAY;
+
     let index = -1;
+
     for (let i = 0; i < lyrics.length; i++) {
-        if (shifted >= lyrics[i].time * scale) index = i;
-        else break;
+
+        if (shifted >= lyrics[i].time * scale) {
+            index = i;
+        } else {
+            break;
+        }
+
     }
+
     return index;
+
 }
 
 function showLyric(index) {
@@ -1028,12 +1137,15 @@ function showLyric(index) {
         lyricElement.textContent = lyrics[index].text;
 
         requestAnimationFrame(() => {
+
             requestAnimationFrame(() => {
                 lyricElement.classList.add("visible");
             });
+
         });
 
     }, 400);
+
 }
 
 function startLoop() {
@@ -1046,22 +1158,32 @@ function startLoop() {
         const index = getLyricIndex(t);
 
         if (index !== currentLyricIndex) {
+
             currentLyricIndex = index;
-            if (index >= 0) showLyric(index);
+
+            if (index >= 0) {
+                showLyric(index);
+            }
+
         }
 
-        // Let the audio finish naturally; use the duration as a fallback
-        // if an ended event is not delivered by the browser.
-        if (Number.isFinite(video.duration) && video.duration > 0 &&
-            t >= video.duration - 0.25) {
+        if (
+            Number.isFinite(video.duration) &&
+            video.duration > 0 &&
+            t >= video.duration - 0.25
+        ) {
+
             beginEnding();
             return;
+
         }
 
         requestAnimationFrame(tick);
+
     }
 
     requestAnimationFrame(tick);
+
 }
 
 video.addEventListener("ended", beginEnding);
@@ -1072,13 +1194,16 @@ video.addEventListener("ended", beginEnding);
 function beginEnding() {
 
     if (endingStarted) return;
+
     endingStarted = true;
 
     lyricElement.classList.remove("visible");
 
     setTimeout(() => {
 
-        try { video.pause(); } catch (e) {}
+        try {
+            video.pause();
+        } catch (e) {}
 
         experience.classList.remove("active");
 
@@ -1086,7 +1211,6 @@ function beginEnding() {
 
             endingScreen.classList.add("active");
 
-            /* Unlock scrolling only now. */
             document.documentElement.classList.remove("locked");
             document.body.classList.remove("locked");
 
@@ -1097,6 +1221,7 @@ function beginEnding() {
         }, 1700);
 
     }, 1300);
+
 }
 
 
@@ -1105,15 +1230,42 @@ function beginEnding() {
 function openLetter() {
 
     if (letterOpened || !endingStarted) return;
+
     letterOpened = true;
 
     endingScreen.classList.remove("active");
+
     letterSection.classList.add("revealed");
 
-    /* Animate the lines only once the letter is actually visible. */
-    letterLines.forEach(line => letterObserver.observe(line));
+    letterLines.forEach(line => {
+        letterObserver.observe(line);
+    });
+
     signatureObserver.observe(signature);
+
+    /*
+       Smoothly move directly to the beginning of the letter.
+       This is shared by laptop and mobile so both devices have
+       the same interaction.
+    */
+    setTimeout(() => {
+
+        letterSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    }, 80);
+
 }
+
+
+/* NEW: CLICK TO READ */
+
+readButton.addEventListener("click", function () {
+    openLetter();
+});
+
 
 window.addEventListener("scroll", function () {
 
@@ -1125,37 +1277,60 @@ window.addEventListener("scroll", function () {
 
 }, { passive: true });
 
+
 const letterObserver = new IntersectionObserver(
     (entries) => {
+
         entries.forEach(entry => {
+
             if (entry.isIntersecting) {
+
                 entry.target.classList.add("visible");
+
                 letterObserver.unobserve(entry.target);
+
             }
+
         });
+
     },
-    { threshold: .2, rootMargin: "0px 0px -6% 0px" }
+    {
+        threshold: .2,
+        rootMargin: "0px 0px -6% 0px"
+    }
 );
+
 
 const signatureObserver = new IntersectionObserver(
     (entries) => {
+
         entries.forEach(entry => {
+
             if (entry.isIntersecting) {
+
                 signature.classList.add("visible");
+
                 signatureObserver.unobserve(signature);
+
             }
+
         });
+
     },
-    { threshold: .4 }
+    {
+        threshold: .4
+    }
 );
 
 
 /* ============================ MISC ============================ */
 
 passwordInput.addEventListener("keydown", function (event) {
+
     if (event.key === "Enter") {
         passwordForm.requestSubmit();
     }
+
 });
 
 experience.addEventListener("contextmenu", function (event) {
@@ -1166,3 +1341,4 @@ experience.addEventListener("contextmenu", function (event) {
 
 </body>
 </html>
+```
