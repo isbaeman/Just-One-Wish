@@ -999,10 +999,19 @@ function getTime() {
 }
 
 function getLyricIndex(t) {
+    // Scale the supplied lyric timeline to the actual audio duration.
+    // This keeps the final lyric near the end of the track instead of
+    // making the experience end long before the song finishes.
+    const lastLyricTime = lyrics[lyrics.length - 1].time;
+    const audioDuration = Number.isFinite(video.duration) && video.duration > 0
+        ? video.duration
+        : lastLyricTime;
+    const usableDuration = Math.max(0, audioDuration - LYRIC_START_DELAY - TAIL_SECONDS);
+    const scale = lastLyricTime > 0 ? usableDuration / lastLyricTime : 1;
     const shifted = t - LYRIC_START_DELAY;
     let index = -1;
     for (let i = 0; i < lyrics.length; i++) {
-        if (shifted >= lyrics[i].time) index = i;
+        if (shifted >= lyrics[i].time * scale) index = i;
         else break;
     }
     return index;
@@ -1041,9 +1050,10 @@ function startLoop() {
             if (index >= 0) showLyric(index);
         }
 
-        const lastTime = lyrics[lyrics.length - 1].time;
-
-        if (t >= lastTime + LYRIC_START_DELAY + TAIL_SECONDS) {
+        // Let the audio finish naturally; use the duration as a fallback
+        // if an ended event is not delivered by the browser.
+        if (Number.isFinite(video.duration) && video.duration > 0 &&
+            t >= video.duration - 0.25) {
             beginEnding();
             return;
         }
