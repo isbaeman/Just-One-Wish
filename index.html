@@ -315,24 +315,36 @@ body {
     inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    object-position: center 58%;
+    object-fit: contain;
+    object-position: center center;
     background: #050505;
     z-index: 1;
-    opacity: 0;
-    filter:
-        brightness(.66)
-        contrast(.95)
-        saturate(.8);
-    transform: scale(1.01);
-    transition:
-        opacity 3.5s ease,
-        transform 32s linear;
+    opacity: 1;
+    filter: brightness(.78) contrast(.95) saturate(.85);
+    transform: none;
+    transition: opacity 3.5s ease;
 }
 
 #experience.active #backgroundImage {
-    opacity: .92;
-    transform: scale(1.07);
+    opacity: 1;
+    transform: none;
+}
+
+@media (max-width: 600px) {
+    #backgroundImage {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center center;
+        opacity: 1;
+        filter: brightness(.78) contrast(.95) saturate(.85);
+        transform: none;
+    }
+
+    #experience.active #backgroundImage {
+        opacity: 1;
+        transform: none;
+    }
 }
 
 /* Soft pool of darkness so the lyrics always stay legible. */
