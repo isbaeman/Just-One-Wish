@@ -5,114 +5,360 @@
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-<title>Theher Ja — Cinematic Lyrics</title>
+<title>One Last Wish</title>
 
-<!-- Beautiful Urdu font -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
 <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-:root {
-    --white: #f8f5ef;
-    --muted: rgba(248,245,239,.62);
-    --glass: rgba(255,255,255,.08);
-    --line: rgba(255,255,255,.14);
-}
-
 html,
 body {
     width: 100%;
-    min-height: 100%;
+    height: 100%;
 }
 
 body {
-    background: #050505;
-    color: var(--white);
+    background: #000;
+    color: #fff;
+    overflow: hidden;
     font-family: "Playfair Display", serif;
-    overflow-x: hidden;
 }
 
-/* =========================
-   BACKGROUND
-========================= */
+
+/* =========================================================
+   PASSWORD SCREEN
+========================================================= */
+
+.password-screen {
+    position: fixed;
+    inset: 0;
+
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #151515 0%,
+            #080808 42%,
+            #000 100%
+        );
+
+    transition:
+        opacity 1s ease,
+        visibility 1s ease;
+}
+
+.password-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.password-content {
+    width: min(90%, 420px);
+
+    text-align: center;
+}
+
+.password-small {
+    font-size: 10px;
+
+    letter-spacing: 5px;
+
+    text-transform: uppercase;
+
+    color: rgba(255,255,255,.42);
+
+    margin-bottom: 25px;
+}
+
+.password-title {
+    font-size: clamp(30px, 6vw, 48px);
+
+    font-weight: 400;
+
+    letter-spacing: 1px;
+
+    margin-bottom: 34px;
+}
+
+.password-form {
+    display: flex;
+
+    width: 100%;
+
+    border-bottom:
+        1px solid rgba(255,255,255,.25);
+
+    transition:
+        border-color .3s ease;
+}
+
+.password-form:focus-within {
+    border-color:
+        rgba(255,255,255,.75);
+}
+
+.password-input {
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 14px 4px;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: white;
+
+    text-align: center;
+
+    font-size: 18px;
+
+    letter-spacing: 6px;
+
+    font-family: Arial, sans-serif;
+}
+
+.password-input::placeholder {
+    color: rgba(255,255,255,.25);
+
+    letter-spacing: 3px;
+}
+
+.password-button {
+    width: 48px;
+
+    border: none;
+
+    background: transparent;
+
+    color: rgba(255,255,255,.65);
+
+    font-size: 21px;
+
+    cursor: pointer;
+
+    transition:
+        color .25s ease,
+        transform .25s ease;
+}
+
+.password-button:hover {
+    color: white;
+
+    transform: translateX(3px);
+}
+
+.password-error {
+    min-height: 22px;
+
+    margin-top: 15px;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 11px;
+
+    color: rgba(255,255,255,.5);
+
+    opacity: 0;
+
+    transition: opacity .3s ease;
+}
+
+.password-error.show {
+    opacity: 1;
+}
+
+
+/* =========================================================
+   WISH SCREEN
+========================================================= */
+
+.wish-screen {
+    position: fixed;
+    inset: 0;
+
+    z-index: 9000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #000;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity 1.2s ease,
+        visibility 1.2s ease;
+}
+
+.wish-screen.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.wish-text {
+    font-size: clamp(28px, 5vw, 58px);
+
+    font-weight: 400;
+
+    letter-spacing: 3px;
+
+    text-align: center;
+
+    color: rgba(255,255,255,.94);
+
+    opacity: 0;
+
+    transform:
+        translateY(20px);
+
+    transition:
+        opacity 1.4s ease,
+        transform 1.4s ease;
+}
+
+.wish-screen.show .wish-text {
+    opacity: 1;
+
+    transform:
+        translateY(0);
+}
+
+.wish-text.fade-out {
+    opacity: 0;
+
+    transform:
+        translateY(-20px);
+}
+
+
+/* =========================================================
+   MAIN EXPERIENCE
+========================================================= */
+
+.main {
+    position: fixed;
+    inset: 0;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity 1.5s ease,
+        visibility 1.5s ease;
+}
+
+.main.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/* =========================================================
+   ATMOSPHERIC BACKGROUND
+========================================================= */
 
 .background {
     position: fixed;
-    inset: -60px;
-    z-index: -3;
+    inset: -70px;
+
+    z-index: -5;
 
     background:
         linear-gradient(
             rgba(0,0,0,.72),
-            rgba(0,0,0,.88)
+            rgba(0,0,0,.9)
         ),
         url("cover.jpg") center/cover no-repeat;
 
-    filter: blur(28px);
-    transform: scale(1.08);
+    filter: blur(30px);
+
+    transform: scale(1.1);
+
+    animation:
+        backgroundMove 18s ease-in-out infinite alternate;
 }
 
-.background::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-        radial-gradient(
-            circle at center,
-            transparent 0%,
-            rgba(0,0,0,.45) 55%,
-            rgba(0,0,0,.85) 100%
-        );
+@keyframes backgroundMove {
+
+    from {
+        transform: scale(1.1);
+    }
+
+    to {
+        transform: scale(1.16);
+    }
 }
 
-/* =========================
-   PAGE
-========================= */
+
+/* =========================================================
+   MAIN PAGE
+========================================================= */
 
 .page {
-    min-height: 100vh;
-    min-height: 100svh;
+    width: 100%;
+    height: 100%;
+
+    padding:
+        25px
+        28px
+        max(25px, env(safe-area-inset-bottom));
 
     display: flex;
     flex-direction: column;
-
-    padding:
-        28px
-        28px
-        max(28px, env(safe-area-inset-bottom));
-
-    position: relative;
 }
 
-/* =========================
-   TOP
-========================= */
+
+/* =========================================================
+   HEADER
+========================================================= */
 
 .topbar {
     width: 100%;
-    max-width: 1450px;
-    margin: 0 auto 20px;
+    max-width: 1400px;
+
+    margin: 0 auto;
 
     display: flex;
     justify-content: space-between;
     align-items: center;
 
     position: relative;
-    z-index: 5;
+
+    z-index: 10;
 }
 
 .brand {
-    font-size: 12px;
+    font-size: 10px;
+
     letter-spacing: 4px;
+
     text-transform: uppercase;
-    color: rgba(255,255,255,.58);
+
+    color: rgba(255,255,255,.42);
 }
 
 .song-info {
@@ -120,54 +366,59 @@ body {
 }
 
 .song-title {
-    font-size: 18px;
+    font-size: 17px;
+
     letter-spacing: 1px;
 }
 
 .artist {
-    margin-top: 3px;
-    font-size: 11px;
+    margin-top: 4px;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 9px;
+
     letter-spacing: 2px;
-    color: var(--muted);
+
     text-transform: uppercase;
+
+    color: rgba(255,255,255,.45);
 }
 
-/* =========================
-   VIDEO AREA
-========================= */
 
-.video-stage {
-    width: 100%;
-    max-width: 1450px;
+/* =========================================================
+   VIDEO
+========================================================= */
 
+.video-area {
     flex: 1;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    margin: 0 auto;
+    width: 100%;
 }
 
 .video-box {
-    width: min(1180px, 100%);
-    aspect-ratio: 16 / 9;
-
     position: relative;
 
+    width: min(1200px, 100%);
+
+    aspect-ratio: 16 / 9;
+
     overflow: hidden;
+
     border-radius: 18px;
 
     background: #000;
 
     box-shadow:
-        0 35px 100px rgba(0,0,0,.65),
+        0 35px 100px rgba(0,0,0,.7),
         0 0 0 1px rgba(255,255,255,.07);
-
-    isolation: isolate;
 }
 
-video {
+.video-box video {
     width: 100%;
     height: 100%;
 
@@ -178,43 +429,51 @@ video {
     background: #000;
 }
 
-/* cinematic darkness over video */
+
+/* =========================================================
+   CINEMATIC VIDEO OVERLAY
+========================================================= */
 
 .video-box::after {
     content: "";
 
     position: absolute;
+
     inset: 0;
 
     pointer-events: none;
 
+    z-index: 2;
+
     background:
         linear-gradient(
             to bottom,
-            rgba(0,0,0,.18),
+            rgba(0,0,0,.22),
             transparent 30%,
-            transparent 62%,
-            rgba(0,0,0,.48)
+            transparent 60%,
+            rgba(0,0,0,.58)
         );
-
-    z-index: 1;
 }
 
-/* =========================
-   LYRIC OVERLAY
-========================= */
 
-.lyrics-layer {
+/* =========================================================
+   LYRIC
+========================================================= */
+
+.lyric-container {
     position: absolute;
+
     inset: 0;
 
-    z-index: 3;
+    z-index: 4;
 
     display: flex;
+
     align-items: center;
+
     justify-content: center;
 
-    padding: 40px;
+    padding: 35px;
 
     pointer-events: none;
 }
@@ -222,9 +481,8 @@ video {
 .lyric {
     max-width: 92%;
 
-    color: #fff;
-
     direction: rtl;
+
     text-align: center;
 
     font-family:
@@ -233,29 +491,33 @@ video {
         serif;
 
     font-size: 50px;
+
     font-weight: 600;
 
-    line-height: 1.8;
+    line-height: 1.85;
 
-    letter-spacing: 0;
+    color: #fff;
 
     text-shadow:
-        0 3px 12px rgba(0,0,0,.85),
-        0 8px 35px rgba(0,0,0,.6);
+        0 3px 12px rgba(0,0,0,.95),
+        0 8px 35px rgba(0,0,0,.7);
 
     opacity: 0;
+
     transform:
-        translateY(20px)
-        scale(.97);
+        translateY(25px)
+        scale(.96);
 
     transition:
-        opacity .65s ease,
+        opacity .7s ease,
         transform .8s cubic-bezier(.22,.61,.36,1);
 
-    will-change: opacity, transform;
+    will-change:
+        opacity,
+        transform;
 }
 
-.lyric.show {
+.lyric.visible {
     opacity: 1;
 
     transform:
@@ -263,44 +525,54 @@ video {
         scale(1);
 }
 
-.lyric.hide {
+.lyric.leaving {
     opacity: 0;
 
     transform:
-        translateY(-18px)
+        translateY(-22px)
         scale(1.015);
 }
 
-/* =========================
-   CENTER PLAY
-========================= */
+
+/* =========================================================
+   PLAY BUTTON
+========================================================= */
 
 .center-play {
     position: absolute;
 
-    left: 50%;
     top: 50%;
+    left: 50%;
 
-    transform: translate(-50%, -50%);
+    transform:
+        translate(-50%, -50%);
 
-    width: 72px;
-    height: 72px;
+    width: 70px;
+    height: 70px;
 
-    border: 1px solid rgba(255,255,255,.28);
+    z-index: 7;
+
     border-radius: 50%;
 
-    background: rgba(0,0,0,.28);
-    backdrop-filter: blur(14px);
+    border:
+        1px solid rgba(255,255,255,.3);
+
+    background:
+        rgba(0,0,0,.25);
+
+    backdrop-filter:
+        blur(15px);
 
     color: white;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 22px;
 
     cursor: pointer;
 
-    z-index: 5;
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
 
     transition:
         opacity .35s ease,
@@ -309,7 +581,8 @@ video {
 }
 
 .center-play:hover {
-    background: rgba(255,255,255,.12);
+    background:
+        rgba(255,255,255,.1);
 
     transform:
         translate(-50%, -50%)
@@ -318,17 +591,14 @@ video {
 
 .center-play.hidden {
     opacity: 0;
+
     pointer-events: none;
 }
 
-.play-icon {
-    margin-left: 4px;
-    font-size: 24px;
-}
 
-/* =========================
+/* =========================================================
    CONTROLS
-========================= */
+========================================================= */
 
 .controls {
     position: absolute;
@@ -337,19 +607,23 @@ video {
     right: 0;
     bottom: 0;
 
-    z-index: 6;
+    z-index: 8;
 
-    padding: 18px 20px 17px;
+    padding:
+        20px
+        20px
+        18px;
 
     background:
         linear-gradient(
             transparent,
-            rgba(0,0,0,.72)
+            rgba(0,0,0,.8)
         );
 
     opacity: 0;
 
-    transform: translateY(8px);
+    transform:
+        translateY(8px);
 
     transition:
         opacity .3s ease,
@@ -360,25 +634,27 @@ video {
 .video-box.paused .controls,
 .controls:hover {
     opacity: 1;
-    transform: translateY(0);
+
+    transform:
+        translateY(0);
 }
+
 
 /* progress */
-
-.progress-area {
-    width: 100%;
-    margin-bottom: 12px;
-}
 
 .progress {
     appearance: none;
 
     width: 100%;
+
     height: 3px;
 
-    background: rgba(255,255,255,.25);
+    margin-bottom: 11px;
 
-    border-radius: 10px;
+    border-radius: 20px;
+
+    background:
+        rgba(255,255,255,.25);
 
     cursor: pointer;
 }
@@ -391,9 +667,7 @@ video {
 
     border-radius: 50%;
 
-    background: #fff;
-
-    cursor: pointer;
+    background: white;
 }
 
 .progress::-moz-range-thumb {
@@ -401,19 +675,21 @@ video {
     height: 11px;
 
     border: none;
+
     border-radius: 50%;
 
-    background: #fff;
-
-    cursor: pointer;
+    background: white;
 }
 
-/* bottom controls */
+
+/* control row */
 
 .control-row {
     display: flex;
+
     align-items: center;
-    gap: 12px;
+
+    gap: 10px;
 }
 
 .control-btn {
@@ -421,19 +697,21 @@ video {
     height: 34px;
 
     border: none;
+
     background: transparent;
 
     color: white;
 
     cursor: pointer;
 
-    font-size: 17px;
-
     display: flex;
+
     align-items: center;
     justify-content: center;
 
-    opacity: .85;
+    font-size: 16px;
+
+    opacity: .82;
 
     transition:
         opacity .2s ease,
@@ -442,32 +720,33 @@ video {
 
 .control-btn:hover {
     opacity: 1;
-    transform: scale(1.08);
+
+    transform:
+        scale(1.08);
 }
 
 .time {
     font-family: Arial, sans-serif;
 
-    font-size: 11px;
-    letter-spacing: .5px;
+    font-size: 10px;
 
-    color: rgba(255,255,255,.72);
+    color:
+        rgba(255,255,255,.7);
 
     white-space: nowrap;
 }
 
 .volume {
-    width: 75px;
+    width: 70px;
 
     appearance: none;
 
     height: 3px;
 
-    background: rgba(255,255,255,.28);
+    border-radius: 20px;
 
-    border-radius: 10px;
-
-    cursor: pointer;
+    background:
+        rgba(255,255,255,.25);
 }
 
 .volume::-webkit-slider-thumb {
@@ -476,8 +755,9 @@ video {
     width: 9px;
     height: 9px;
 
-    background: white;
     border-radius: 50%;
+
+    background: white;
 }
 
 .volume::-moz-range-thumb {
@@ -486,59 +766,60 @@ video {
 
     border: none;
 
-    background: white;
     border-radius: 50%;
+
+    background: white;
 }
 
 .spacer {
     flex: 1;
 }
 
-/* =========================
+
+/* =========================================================
    FOOTER
-========================= */
+========================================================= */
 
 .footer {
     width: 100%;
-    max-width: 1180px;
+    max-width: 1200px;
 
-    margin: 20px auto 0;
+    margin: 14px auto 0;
 
     display: flex;
-    justify-content: space-between;
-    align-items: center;
 
-    color: rgba(255,255,255,.38);
+    justify-content: space-between;
 
     font-family: Arial, sans-serif;
 
-    font-size: 9px;
+    font-size: 8px;
+
     letter-spacing: 2px;
 
     text-transform: uppercase;
+
+    color:
+        rgba(255,255,255,.3);
 }
 
-.footer span:last-child {
-    text-align: right;
-}
 
-/* =========================
+/* =========================================================
    MOBILE
-========================= */
+========================================================= */
 
 @media (max-width: 700px) {
 
     .page {
-        padding: 18px 14px 20px;
-    }
-
-    .topbar {
-        margin-bottom: 14px;
+        padding:
+            16px
+            12px
+            max(15px, env(safe-area-inset-bottom));
     }
 
     .brand {
-        font-size: 9px;
-        letter-spacing: 2.5px;
+        font-size: 8px;
+
+        letter-spacing: 2px;
     }
 
     .song-title {
@@ -546,103 +827,95 @@ video {
     }
 
     .artist {
-        font-size: 8px;
-        letter-spacing: 1.5px;
-    }
-
-    .video-stage {
-        align-items: center;
+        font-size: 7px;
     }
 
     .video-box {
-        border-radius: 12px;
+        border-radius: 11px;
+
         aspect-ratio: 16 / 10;
     }
 
-    .lyrics-layer {
-        padding: 20px;
+    .lyric-container {
+        padding: 18px;
     }
 
     .lyric {
         max-width: 95%;
 
-        font-size: clamp(29px, 8vw, 42px);
+        font-size:
+            clamp(28px, 8vw, 42px);
 
-        line-height: 1.85;
-
-        text-shadow:
-            0 2px 9px rgba(0,0,0,.9),
-            0 7px 25px rgba(0,0,0,.7);
+        line-height: 1.9;
     }
 
     .center-play {
-        width: 60px;
-        height: 60px;
-    }
+        width: 58px;
+        height: 58px;
 
-    .play-icon {
-        font-size: 20px;
+        font-size: 18px;
     }
 
     .controls {
         opacity: 1;
-        transform: translateY(0);
+
+        transform: none;
 
         padding:
             14px
-            12px
-            max(12px, env(safe-area-inset-bottom));
+            11px
+            max(11px, env(safe-area-inset-bottom));
     }
 
     .volume {
-        width: 55px;
-    }
-
-    .control-btn {
-        width: 30px;
-        height: 30px;
+        width: 50px;
     }
 
     .footer {
-        margin-top: 12px;
+        font-size: 6px;
 
-        font-size: 7px;
-        letter-spacing: 1.5px;
+        margin-top: 9px;
+    }
+
+    .password-title {
+        font-size: 34px;
+    }
+
+    .password-small {
+        font-size: 8px;
+
+        letter-spacing: 3px;
     }
 }
 
-/* =========================
-   VERY SMALL PHONES
-========================= */
 
-@media (max-width: 400px) {
+/* =========================================================
+   SMALL PHONES
+========================================================= */
 
-    .song-info {
-        max-width: 130px;
-    }
+@media (max-width: 390px) {
 
     .lyric {
-        font-size: 28px;
-    }
-
-    .time {
-        font-size: 9px;
+        font-size: 27px;
     }
 
     .volume {
         display: none;
     }
+
+    .time {
+        font-size: 9px;
+    }
 }
 
-/* =========================
+
+/* =========================================================
    FULLSCREEN
-========================= */
+========================================================= */
 
 .video-box:fullscreen {
     width: 100vw;
     height: 100vh;
-
-    aspect-ratio: auto;
 
     border-radius: 0;
 }
@@ -650,176 +923,245 @@ video {
 .video-box:fullscreen video {
     object-fit: contain;
 }
+
 </style>
 </head>
 
+
 <body>
 
-<div class="background"></div>
 
-<main class="page">
+<!-- =======================================================
+     PASSWORD
+======================================================= -->
 
-    <!-- TOP -->
-    <header class="topbar">
+<section class="password-screen" id="passwordScreen">
 
-        <div class="brand">
-            Cinematic Lyrics
+    <div class="password-content">
+
+        <div class="password-small">
+            A private experience
         </div>
 
-        <div class="song-info">
-            <div class="song-title">
-                Theher Ja
-            </div>
+        <h1 class="password-title">
+            Enter Password
+        </h1>
 
-            <div class="artist">
-                Garvit Soni · Priyansh Srivastava
-            </div>
+        <form class="password-form" id="passwordForm">
+
+            <input
+                type="password"
+                id="passwordInput"
+                class="password-input"
+                placeholder="••••••••"
+                autocomplete="off"
+                inputmode="numeric"
+            >
+
+            <button
+                type="submit"
+                class="password-button"
+                aria-label="Enter">
+                →
+            </button>
+
+        </form>
+
+        <div
+            class="password-error"
+            id="passwordError">
+            Incorrect password
         </div>
 
-    </header>
+    </div>
+
+</section>
 
 
-    <!-- VIDEO -->
-    <section class="video-stage">
+<!-- =======================================================
+     ONE LAST WISH
+======================================================= -->
 
-        <div class="video-box" id="videoBox">
+<section class="wish-screen" id="wishScreen">
 
-            <video
-                id="video"
-                playsinline
-                preload="metadata"
-                poster="cover.jpg">
+    <div
+        class="wish-text"
+        id="wishText">
+        One Last Wish
+    </div>
 
-                <source src="song.mp4" type="video/mp4">
-
-                Your browser does not support the video element.
-            </video>
+</section>
 
 
-            <!-- LYRIC -->
-            <div class="lyrics-layer">
+<!-- =======================================================
+     MAIN
+======================================================= -->
 
-                <div
-                    class="lyric"
-                    id="lyricText"
-                    aria-live="polite">
+<main class="main" id="main">
+
+    <div class="background"></div>
+
+    <div class="page">
+
+
+        <!-- HEADER -->
+
+        <header class="topbar">
+
+            <div class="brand">
+                One Last Wish
+            </div>
+
+            <div class="song-info">
+
+                <div class="song-title">
+                    Theher Ja
+                </div>
+
+                <div class="artist">
+                    Garvit Soni · Priyansh Srivastava
                 </div>
 
             </div>
 
-
-            <!-- CENTER PLAY -->
-            <button
-                class="center-play"
-                id="centerPlay"
-                aria-label="Play">
-
-                <span
-                    class="play-icon"
-                    id="centerPlayIcon">
-                    ▶
-                </span>
-
-            </button>
+        </header>
 
 
-            <!-- CONTROLS -->
-            <div class="controls">
+        <!-- VIDEO -->
 
-                <div class="progress-area">
+        <section class="video-area">
+
+            <div
+                class="video-box paused"
+                id="videoBox">
+
+                <video
+                    id="video"
+                    playsinline
+                    preload="metadata"
+                    poster="cover.jpg">
+
+                    <source
+                        src="song.mp4"
+                        type="video/mp4">
+
+                    Your browser does not support video.
+                </video>
+
+
+                <!-- ONLY ONE LYRIC EXISTS HERE -->
+
+                <div class="lyric-container">
+
+                    <div
+                        class="lyric"
+                        id="lyric">
+                    </div>
+
+                </div>
+
+
+                <!-- CENTER PLAY -->
+
+                <button
+                    class="center-play"
+                    id="centerPlay"
+                    aria-label="Play">
+
+                    <span id="centerPlayIcon">
+                        ▶
+                    </span>
+
+                </button>
+
+
+                <!-- CONTROLS -->
+
+                <div class="controls">
 
                     <input
-                        class="progress"
-                        id="progress"
                         type="range"
+                        id="progress"
+                        class="progress"
                         min="0"
                         max="100"
                         value="0"
-                        step="0.01">
+                        step="0.01"
+                    >
 
-                </div>
+                    <div class="control-row">
 
+                        <button
+                            class="control-btn"
+                            id="playBtn">
+                            ▶
+                        </button>
 
-                <div class="control-row">
+                        <span
+                            class="time"
+                            id="currentTime">
+                            00:00
+                        </span>
 
-                    <button
-                        class="control-btn"
-                        id="playBtn"
-                        aria-label="Play">
+                        <span
+                            class="time">
+                            /
+                        </span>
 
-                        ▶
-                    </button>
+                        <span
+                            class="time"
+                            id="duration">
+                            00:00
+                        </span>
 
+                        <button
+                            class="control-btn"
+                            id="muteBtn">
+                            🔊
+                        </button>
 
-                    <div
-                        class="time"
-                        id="currentTime">
-                        00:00
+                        <input
+                            type="range"
+                            class="volume"
+                            id="volume"
+                            min="0"
+                            max="1"
+                            value="1"
+                            step="0.01"
+                        >
+
+                        <div class="spacer"></div>
+
+                        <button
+                            class="control-btn"
+                            id="fullscreenBtn">
+                            ⛶
+                        </button>
+
                     </div>
-
-                    <div
-                        class="time">
-                        /
-                    </div>
-
-                    <div
-                        class="time"
-                        id="duration">
-                        00:00
-                    </div>
-
-
-                    <button
-                        class="control-btn"
-                        id="muteBtn"
-                        aria-label="Mute">
-
-                        🔊
-                    </button>
-
-
-                    <input
-                        class="volume"
-                        id="volume"
-                        type="range"
-                        min="0"
-                        max="1"
-                        value="1"
-                        step="0.01">
-
-
-                    <div class="spacer"></div>
-
-
-                    <button
-                        class="control-btn"
-                        id="fullscreenBtn"
-                        aria-label="Fullscreen">
-
-                        ⛶
-                    </button>
 
                 </div>
 
             </div>
 
-        </div>
-
-    </section>
+        </section>
 
 
-    <!-- FOOTER -->
-    <footer class="footer">
+        <!-- FOOTER -->
 
-        <span>
-            A Song In Motion
-        </span>
+        <footer class="footer">
 
-        <span>
-            Isba Eman
-        </span>
+            <span>
+                A Song In Motion
+            </span>
 
-    </footer>
+            <span>
+                Isba Eman
+            </span>
+
+        </footer>
+
+    </div>
 
 </main>
 
@@ -827,44 +1169,173 @@ video {
 <script>
 
 /* =========================================================
+   PASSWORD
+========================================================= */
+
+const CORRECT_PASSWORD = "2322007";
+
+const passwordScreen =
+    document.getElementById("passwordScreen");
+
+const passwordForm =
+    document.getElementById("passwordForm");
+
+const passwordInput =
+    document.getElementById("passwordInput");
+
+const passwordError =
+    document.getElementById("passwordError");
+
+const wishScreen =
+    document.getElementById("wishScreen");
+
+const wishText =
+    document.getElementById("wishText");
+
+const main =
+    document.getElementById("main");
+
+
+passwordInput.focus();
+
+
+passwordForm.addEventListener(
+    "submit",
+    function(event) {
+
+        event.preventDefault();
+
+        const entered =
+            passwordInput.value.trim();
+
+        if (entered === CORRECT_PASSWORD) {
+
+            passwordError.classList.remove("show");
+
+            passwordScreen.classList.add("hidden");
+
+            setTimeout(
+                () => {
+
+                    wishScreen.classList.add("show");
+
+                },
+                500
+            );
+
+
+            /*
+               "One Last Wish" stays visible
+               for a cinematic moment.
+            */
+
+            setTimeout(
+                () => {
+
+                    wishText.classList.add("fade-out");
+
+                },
+                2600
+            );
+
+
+            /*
+               Then reveal the actual
+               video experience.
+            */
+
+            setTimeout(
+                () => {
+
+                    wishScreen.classList.remove("show");
+
+                    main.classList.add("show");
+
+                    /*
+                       Start video after user has
+                       interacted with password screen.
+                    */
+
+                    video.play().catch(
+                        () => {
+
+                            /*
+                               If browser blocks autoplay,
+                               user can press play.
+                            */
+
+                        }
+                    );
+
+                },
+                3600
+            );
+
+        } else {
+
+            passwordError.textContent =
+                "Incorrect password";
+
+            passwordError.classList.add("show");
+
+            passwordInput.value = "";
+
+            passwordInput.focus();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
    VIDEO
 ========================================================= */
 
-const video = document.getElementById("video");
-const videoBox = document.getElementById("videoBox");
+const video =
+    document.getElementById("video");
 
-const playBtn = document.getElementById("playBtn");
-const centerPlay = document.getElementById("centerPlay");
-const centerPlayIcon = document.getElementById("centerPlayIcon");
+const videoBox =
+    document.getElementById("videoBox");
 
-const progress = document.getElementById("progress");
+const playBtn =
+    document.getElementById("playBtn");
 
-const currentTimeEl = document.getElementById("currentTime");
-const durationEl = document.getElementById("duration");
+const centerPlay =
+    document.getElementById("centerPlay");
 
-const volume = document.getElementById("volume");
-const muteBtn = document.getElementById("muteBtn");
+const centerPlayIcon =
+    document.getElementById("centerPlayIcon");
+
+const progress =
+    document.getElementById("progress");
+
+const currentTimeEl =
+    document.getElementById("currentTime");
+
+const durationEl =
+    document.getElementById("duration");
+
+const volume =
+    document.getElementById("volume");
+
+const muteBtn =
+    document.getElementById("muteBtn");
 
 const fullscreenBtn =
     document.getElementById("fullscreenBtn");
 
-const lyricText =
-    document.getElementById("lyricText");
+const lyric =
+    document.getElementById("lyric");
 
 
 /* =========================================================
    LYRICS
+=========================================================
 
-   IMPORTANT:
-   Replace the "time" values with the exact timestamps
-   of your song.
+   CHANGE ONLY THE "time" VALUES TO MATCH
+   YOUR ACTUAL SONG.
 
-   Example:
-   0      = 00:00
-   5.5    = 00:05.5
-   12     = 00:12
-
-   The text itself can also be edited here.
 ========================================================= */
 
 const lyrics = [
@@ -963,36 +1434,6 @@ const lyrics = [
 
 
 /* =========================================================
-   STATE
-========================================================= */
-
-let currentLyricIndex = -1;
-let lyricTimer = null;
-
-
-/* =========================================================
-   FORMAT TIME
-========================================================= */
-
-function formatTime(seconds) {
-
-    if (!Number.isFinite(seconds)) {
-        return "00:00";
-    }
-
-    const mins = Math.floor(seconds / 60);
-
-    const secs = Math.floor(seconds % 60);
-
-    return (
-        String(mins).padStart(2, "0")
-        + ":" +
-        String(secs).padStart(2, "0")
-    );
-}
-
-
-/* =========================================================
    PLAY / PAUSE
 ========================================================= */
 
@@ -1007,6 +1448,7 @@ function togglePlay() {
         video.pause();
 
     }
+
 }
 
 
@@ -1059,7 +1501,33 @@ video.addEventListener(
 
 
 /* =========================================================
-   DURATION
+   TIME
+========================================================= */
+
+function formatTime(seconds) {
+
+    if (!Number.isFinite(seconds)) {
+        return "00:00";
+    }
+
+    const minutes =
+        Math.floor(seconds / 60);
+
+    const secondsPart =
+        Math.floor(seconds % 60);
+
+    return (
+        String(minutes).padStart(2, "0")
+        + ":"
+        +
+        String(secondsPart).padStart(2, "0")
+    );
+
+}
+
+
+/* =========================================================
+   VIDEO METADATA
 ========================================================= */
 
 video.addEventListener(
@@ -1074,53 +1542,18 @@ video.addEventListener(
 
 
 /* =========================================================
-   PROGRESS
+   FIND CURRENT LYRIC
 ========================================================= */
 
-video.addEventListener(
-    "timeupdate",
-    () => {
-
-        if (video.duration) {
-
-            progress.value =
-                (video.currentTime / video.duration) * 100;
-
-        }
-
-        currentTimeEl.textContent =
-            formatTime(video.currentTime);
-
-        updateLyrics();
-
-    }
-);
-
-
-progress.addEventListener(
-    "input",
-    () => {
-
-        if (!video.duration) return;
-
-        video.currentTime =
-            (progress.value / 100) * video.duration;
-
-        updateLyrics(true);
-
-    }
-);
-
-
-/* =========================================================
-   LYRIC FINDER
-========================================================= */
-
-function getLyricIndex(time) {
+function findCurrentLyric(time) {
 
     let index = -1;
 
-    for (let i = 0; i < lyrics.length; i++) {
+    for (
+        let i = 0;
+        i < lyrics.length;
+        i++
+    ) {
 
         if (time >= lyrics[i].time) {
 
@@ -1135,55 +1568,71 @@ function getLyricIndex(time) {
     }
 
     return index;
+
 }
 
 
 /* =========================================================
-   SHOW LYRIC
+   LYRIC STATE
 ========================================================= */
 
-function showLyric(index) {
+let currentLyric = -1;
 
-    if (index < 0 || index >= lyrics.length) {
+let lyricChangeTimer;
+
+
+/* =========================================================
+   CHANGE LYRIC
+========================================================= */
+
+function changeLyric(index) {
+
+    if (
+        index < 0
+        ||
+        index >= lyrics.length
+    ) {
 
         hideLyric();
 
         return;
+
     }
 
-    const text = lyrics[index].text;
+
+    clearTimeout(lyricChangeTimer);
+
 
     /*
-       First fade old lyric out.
+       First fade current lyric away.
     */
 
-    lyricText.classList.remove("show");
+    lyric.classList.remove("visible");
 
-    lyricText.classList.add("hide");
-
-
-    clearTimeout(lyricTimer);
+    lyric.classList.add("leaving");
 
 
-    lyricTimer = setTimeout(
-        () => {
+    /*
+       Then replace it with the next lyric.
+    */
 
-            lyricText.textContent = text;
+    lyricChangeTimer =
+        setTimeout(
+            () => {
 
-            lyricText.classList.remove("hide");
+                lyric.textContent =
+                    lyrics[index].text;
 
-            /*
-               Force browser to recognize
-               the new animation state.
-            */
+                lyric.classList.remove("leaving");
 
-            void lyricText.offsetWidth;
+                void lyric.offsetWidth;
 
-            lyricText.classList.add("show");
+                lyric.classList.add("visible");
 
-        },
-        180
-    );
+            },
+            250
+        );
+
 }
 
 
@@ -1193,32 +1642,29 @@ function showLyric(index) {
 
 function hideLyric() {
 
-    clearTimeout(lyricTimer);
+    clearTimeout(lyricChangeTimer);
 
-    lyricText.classList.remove("show");
+    lyric.classList.remove("visible");
 
-    lyricText.classList.add("hide");
+    lyric.classList.add("leaving");
 
 }
 
 
 /* =========================================================
-   SYNCHRONIZE LYRICS
+   SYNC LYRICS
 ========================================================= */
 
-function updateLyrics(force = false) {
+function updateLyrics() {
 
     const index =
-        getLyricIndex(video.currentTime);
+        findCurrentLyric(video.currentTime);
 
-    if (
-        index !== currentLyricIndex
-        || force
-    ) {
+    if (index !== currentLyric) {
 
-        currentLyricIndex = index;
+        currentLyric = index;
 
-        showLyric(index);
+        changeLyric(index);
 
     }
 
@@ -1226,23 +1672,65 @@ function updateLyrics(force = false) {
 
 
 /* =========================================================
-   SEEKING
+   VIDEO TIME UPDATE
 ========================================================= */
+
+video.addEventListener(
+    "timeupdate",
+    () => {
+
+        if (video.duration) {
+
+            progress.value =
+                (
+                    video.currentTime
+                    /
+                    video.duration
+                ) * 100;
+
+        }
+
+        currentTimeEl.textContent =
+            formatTime(video.currentTime);
+
+        updateLyrics();
+
+    }
+);
+
+
+/* =========================================================
+   SEEK
+========================================================= */
+
+progress.addEventListener(
+    "input",
+    () => {
+
+        if (!video.duration) {
+            return;
+        }
+
+        video.currentTime =
+            (
+                Number(progress.value)
+                /
+                100
+            )
+            *
+            video.duration;
+
+        updateLyrics();
+
+    }
+);
+
 
 video.addEventListener(
     "seeking",
     () => {
 
-        const index =
-            getLyricIndex(video.currentTime);
-
-        if (index !== currentLyricIndex) {
-
-            currentLyricIndex = index;
-
-            showLyric(index);
-
-        }
+        updateLyrics();
 
     }
 );
@@ -1288,7 +1776,8 @@ function updateMuteIcon() {
 
     if (
         video.muted
-        || video.volume === 0
+        ||
+        video.volume === 0
     ) {
 
         muteBtn.textContent = "🔇";
@@ -1324,10 +1813,7 @@ fullscreenBtn.addEventListener(
 
         } catch (error) {
 
-            console.log(
-                "Fullscreen unavailable:",
-                error
-            );
+            console.log(error);
 
         }
 
@@ -1336,7 +1822,7 @@ fullscreenBtn.addEventListener(
 
 
 /* =========================================================
-   DOUBLE CLICK VIDEO
+   DOUBLE CLICK
 ========================================================= */
 
 video.addEventListener(
@@ -1366,31 +1852,12 @@ video.addEventListener(
 
 
 /* =========================================================
-   VIDEO CLICK
-========================================================= */
-
-video.addEventListener(
-    "click",
-    () => {
-
-        togglePlay();
-
-    }
-);
-
-
-/* =========================================================
-   KEYBOARD CONTROLS
+   KEYBOARD
 ========================================================= */
 
 document.addEventListener(
     "keydown",
     (event) => {
-
-        /*
-           Don't trigger shortcuts while
-           typing into an input.
-        */
 
         if (
             event.target.tagName === "INPUT"
@@ -1416,7 +1883,7 @@ document.addEventListener(
                     video.currentTime + 5
                 );
 
-            updateLyrics(true);
+            updateLyrics();
 
         }
 
@@ -1429,12 +1896,16 @@ document.addEventListener(
                     video.currentTime - 5
                 );
 
-            updateLyrics(true);
+            updateLyrics();
 
         }
 
 
-        if (event.key.toLowerCase() === "m") {
+        if (
+            event.key.toLowerCase()
+            ===
+            "m"
+        ) {
 
             video.muted =
                 !video.muted;
@@ -1444,7 +1915,11 @@ document.addEventListener(
         }
 
 
-        if (event.key.toLowerCase() === "f") {
+        if (
+            event.key.toLowerCase()
+            ===
+            "f"
+        ) {
 
             fullscreenBtn.click();
 
@@ -1455,7 +1930,7 @@ document.addEventListener(
 
 
 /* =========================================================
-   VIDEO ENDED
+   VIDEO END
 ========================================================= */
 
 video.addEventListener(
@@ -1464,14 +1939,14 @@ video.addEventListener(
 
         hideLyric();
 
-        currentLyricIndex = -1;
+        currentLyric = -1;
 
     }
 );
 
 
 /* =========================================================
-   INITIAL STATE
+   INITIAL
 ========================================================= */
 
 video.volume = 1;
