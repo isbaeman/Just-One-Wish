@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="locked">
 
 <head>
 <meta charset="UTF-8">
@@ -8,7 +8,6 @@
 
 <title>One Last Wish</title>
 
-<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400&family=Qwitcher+Grypen:wght@400;700&display=swap"
@@ -17,9 +16,6 @@
 <style>
 :root {
     --black: #050505;
-    --black-soft: #0a0a0a;
-    --dark: #111111;
-    --dark-soft: #181818;
     --white: #ede8e2;
     --muted: #b8b1aa;
     --ease: cubic-bezier(.22, .61, .36, 1);
@@ -33,9 +29,14 @@
 
 html {
     width: 100%;
-    min-height: 100%;
     background: var(--black);
     scroll-behavior: smooth;
+}
+
+html.locked,
+body.locked {
+    height: 100%;
+    overflow: hidden;
 }
 
 body {
@@ -57,12 +58,6 @@ body {
 .qwitcher-grypen-regular {
     font-family: "Qwitcher Grypen", cursive;
     font-weight: 400;
-    font-style: normal;
-}
-
-.qwitcher-grypen-bold {
-    font-family: "Qwitcher Grypen", cursive;
-    font-weight: 700;
     font-style: normal;
 }
 
@@ -123,6 +118,8 @@ body {
     pointer-events: auto;
 }
 
+/* ---------- PASSWORD ---------- */
+
 #passwordScreen {
     z-index: 50;
 }
@@ -141,7 +138,7 @@ body {
     color: var(--white);
     opacity: 0;
     transform: translateY(12px);
-    animation: passwordTitleIn 1.6s 0.3s var(--ease) forwards;
+    animation: passwordTitleIn 1.6s .3s var(--ease) forwards;
 }
 
 .password-form {
@@ -161,9 +158,7 @@ body {
     text-align: center;
     font-size: 17px;
     letter-spacing: .18em;
-    transition:
-        border-color .5s ease,
-        box-shadow .5s ease;
+    transition: border-color .5s ease;
 }
 
 .password-input::placeholder {
@@ -226,14 +221,10 @@ body {
     }
 }
 
+/* ---------- WISH ---------- */
+
 #wishScreen {
     z-index: 40;
-    background: var(--black);
-}
-
-.wish-content {
-    position: relative;
-    text-align: center;
 }
 
 .wish-title {
@@ -258,13 +249,10 @@ body {
     transform: scale(1);
 }
 
+/* ---------- BEGIN ---------- */
+
 #beginScreen {
     z-index: 35;
-    background: var(--black);
-}
-
-.begin-wrap {
-    text-align: center;
 }
 
 .begin-btn {
@@ -300,9 +288,7 @@ body {
     transform: translateY(-2px);
 }
 
-.begin-btn:active {
-    transform: translateY(0);
-}
+/* ---------- EXPERIENCE ---------- */
 
 #experience {
     position: fixed;
@@ -350,6 +336,7 @@ body {
 .video-overlay {
     position: absolute;
     inset: 0;
+    z-index: 2;
     background:
         linear-gradient(
             180deg,
@@ -357,12 +344,12 @@ body {
             rgba(0,0,0,.28) 45%,
             rgba(0,0,0,.62) 100%
         );
-    z-index: 2;
 }
 
 .video-vignette {
     position: absolute;
     inset: 0;
+    z-index: 3;
     background:
         radial-gradient(
             ellipse at center,
@@ -370,7 +357,6 @@ body {
             rgba(0,0,0,.28) 70%,
             rgba(0,0,0,.78) 100%
         );
-    z-index: 3;
 }
 
 .lyric-stage {
@@ -380,9 +366,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding:
-        40px
-        clamp(22px, 6vw, 100px);
+    padding: 40px clamp(22px, 6vw, 100px);
 }
 
 .lyric {
@@ -391,22 +375,15 @@ body {
     text-align: center;
     direction: rtl;
     unicode-bidi: plaintext;
-
     font-family: "Noto Nastaliq Urdu", serif;
     font-size: clamp(27px, 4vw, 53px);
     line-height: 2;
-
     text-shadow:
         0 2px 20px rgba(0,0,0,.8),
         0 0 45px rgba(0,0,0,.45);
-
     opacity: 0;
     filter: blur(12px);
-
-    transform:
-        translateY(12px)
-        scale(.96);
-
+    transform: translateY(12px) scale(.96);
     transition:
         opacity 1.1s var(--ease),
         filter 1.1s var(--ease),
@@ -416,18 +393,15 @@ body {
 .lyric.visible {
     opacity: .98;
     filter: blur(0);
-    transform:
-        translateY(0)
-        scale(1);
+    transform: translateY(0) scale(1);
 }
+
+/* ---------- ENDING ---------- */
 
 #endingScreen {
     position: fixed;
     inset: 0;
     z-index: 30;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     background: #050505;
     opacity: 0;
     visibility: hidden;
@@ -440,7 +414,6 @@ body {
 #endingScreen.active {
     opacity: 1;
     visibility: visible;
-    pointer-events: auto;
 }
 
 .scroll-indicator {
@@ -475,27 +448,30 @@ body {
 }
 
 @keyframes arrowFloat {
-    0%, 100% {
-        transform: translateY(0);
-    }
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(6px); }
+}
 
-    50% {
-        transform: translateY(6px);
-    }
+/* ---------- SCROLL HOST + LETTER ---------- */
+
+#scrollHost {
+    position: relative;
+    width: 100%;
+    z-index: 10;
+}
+
+.scroll-spacer {
+    width: 100%;
+    height: 100vh;
 }
 
 #letterSection {
     position: relative;
     width: 100%;
-    min-height: 190vh;
+    min-height: 100vh;
     background: #050505;
-    z-index: 10;
-    padding:
-        28vh
-        clamp(28px, 8vw, 130px)
-        20vh;
+    padding: 22vh clamp(28px, 8vw, 130px) 24vh;
     display: flex;
-    align-items: center;
     justify-content: center;
     opacity: 0;
     visibility: hidden;
@@ -512,13 +488,8 @@ body {
 .letter-wrap {
     position: relative;
     width: min(760px, 90vw);
-    min-height: 850px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    padding:
-        10vh
-        clamp(5px, 3vw, 30px);
 }
 
 .letter-line {
@@ -548,9 +519,8 @@ body {
 }
 
 .signature {
-    position: absolute;
-    right: 0;
-    bottom: 4vh;
+    align-self: flex-end;
+    margin-top: 14vh;
     color: rgba(237,232,226,.88);
     font-family: "Qwitcher Grypen", cursive;
     font-size: clamp(42px, 6vw, 68px);
@@ -568,23 +538,11 @@ body {
     filter: blur(0);
 }
 
-.letter-end {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 15vh;
-    pointer-events: none;
-}
+/* ---------- RESPONSIVE ---------- */
 
 @media (max-width: 900px) {
     .lyric {
         font-size: clamp(25px, 5vw, 42px);
-        line-height: 2;
-    }
-
-    .letter-wrap {
-        min-height: 760px;
     }
 
     .letter-line {
@@ -593,15 +551,7 @@ body {
 }
 
 @media (max-width: 600px) {
-    html,
-    body {
-        width: 100%;
-        overflow-x: hidden;
-    }
-
-    .password-wrap {
-        width: 82vw;
-    }
+    .password-wrap { width: 82vw; }
 
     .password-title {
         font-size: 17px;
@@ -625,18 +575,14 @@ body {
     }
 
     .lyric-stage {
-        padding:
-            30px
-            22px
-            45px;
+        padding: 30px 22px 45px;
     }
 
     .lyric {
         width: 92vw;
         font-size: clamp(22px, 6.4vw, 31px);
         line-height: 2.15;
-        text-shadow:
-            0 2px 18px rgba(0,0,0,.9);
+        text-shadow: 0 2px 18px rgba(0,0,0,.9);
     }
 
     #backgroundVideo {
@@ -650,9 +596,7 @@ body {
             blur(1.5px);
     }
 
-    .scroll-indicator {
-        bottom: 6vh;
-    }
+    .scroll-indicator { bottom: 6vh; }
 
     .scroll-arrow {
         font-size: 19px;
@@ -665,19 +609,7 @@ body {
     }
 
     #letterSection {
-        min-height: 180vh;
-        padding:
-            25vh
-            24px
-            17vh;
-    }
-
-    .letter-wrap {
-        width: 100%;
-        min-height: 700px;
-        padding:
-            6vh
-            2px;
+        padding: 20vh 24px 22vh;
     }
 
     .letter-line {
@@ -686,54 +618,38 @@ body {
         line-height: 1.18;
     }
 
-    .letter-gap {
-        height: 27px;
-    }
+    .letter-gap { height: 27px; }
 
     .signature {
-        right: 2px;
-        bottom: 3vh;
+        margin-top: 12vh;
         font-size: clamp(42px, 13vw, 62px);
     }
 }
 
 @media (max-width: 380px) {
-    .lyric {
-        font-size: 21px;
-    }
-
-    .letter-line {
-        font-size: 29px;
-    }
-
-    .signature {
-        font-size: 43px;
-    }
+    .lyric { font-size: 21px; }
+    .letter-line { font-size: 29px; }
+    .signature { font-size: 43px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
+    *, *::before, *::after {
         animation-duration: .01ms !important;
         animation-iteration-count: 1 !important;
-        scroll-behavior: auto !important;
         transition-duration: .01ms !important;
     }
 }
 </style>
 </head>
 
-<body>
+<body class="locked">
 
 <div id="app">
 
     <section id="passwordScreen" class="screen active">
         <div class="password-wrap">
 
-            <div class="password-title">
-                Enter Password
-            </div>
+            <div class="password-title">Enter Password</div>
 
             <form id="passwordForm" class="password-form">
 
@@ -744,21 +660,11 @@ body {
                     autocomplete="off"
                     spellcheck="false"
                     aria-label="Password"
-                    placeholder="••••••••"
-                >
+                    placeholder="••••••••">
 
-                <button
-                    type="submit"
-                    class="enter-btn"
-                >
-                    Enter
-                </button>
+                <button type="submit" class="enter-btn">Enter</button>
 
-                <div
-                    id="passwordError"
-                    class="password-error"
-                    aria-live="polite"
-                >
+                <div id="passwordError" class="password-error" aria-live="polite">
                     That isn't the right password.
                 </div>
 
@@ -768,32 +674,16 @@ body {
 
 
     <section id="wishScreen" class="screen">
-
         <div class="wish-content">
-
-            <div class="wish-title qwitcher-grypen-regular">
-                One Last Wish
-            </div>
-
+            <div class="wish-title qwitcher-grypen-regular">One Last Wish</div>
         </div>
-
     </section>
 
 
     <section id="beginScreen" class="screen">
-
         <div class="begin-wrap">
-
-            <button
-                id="beginButton"
-                class="begin-btn"
-                type="button"
-            >
-                Begin
-            </button>
-
+            <button id="beginButton" class="begin-btn" type="button">Begin</button>
         </div>
-
     </section>
 
 
@@ -804,90 +694,55 @@ body {
             src="song.mp4"
             poster="cover.jpg"
             playsinline
+            webkit-playsinline
             preload="auto"
-            aria-hidden="true"
-        ></video>
+            aria-hidden="true"></video>
 
         <div class="video-overlay"></div>
         <div class="video-vignette"></div>
 
         <div class="lyric-stage">
-
-            <div
-                id="lyric"
-                class="lyric noto-nastaliq-urdu"
-            ></div>
-
+            <div id="lyric" class="lyric noto-nastaliq-urdu"></div>
         </div>
 
     </main>
 
 
     <section id="endingScreen">
-
         <div class="scroll-indicator">
-
             <span class="scroll-arrow">↓</span>
-
-            <span class="scroll-text">
-                scroll down
-            </span>
-
+            <span class="scroll-text">scroll down</span>
         </div>
-
     </section>
 
 
-    <section id="letterSection">
+    <div id="scrollHost">
 
-        <div class="letter-wrap">
+        <div class="scroll-spacer"></div>
 
-            <p class="letter-line">
-                Maybe some things are better left unsaid.
-            </p>
+        <section id="letterSection">
+            <div class="letter-wrap">
 
-            <p class="letter-line">
-                Maybe some feelings are meant to stay
-            </p>
+                <p class="letter-line">Maybe some things are better left unsaid.</p>
+                <p class="letter-line">Maybe some feelings are meant to stay</p>
+                <p class="letter-line">between the words,</p>
+                <p class="letter-line">the silence,</p>
+                <p class="letter-line">and the memories.</p>
 
-            <p class="letter-line">
-                between the words,
-            </p>
+                <div class="letter-gap"></div>
 
-            <p class="letter-line">
-                the silence,
-            </p>
+                <p class="letter-line">So this isn't goodbye.</p>
+                <p class="letter-line">Just one last wish...</p>
+                <p class="letter-line">Stay.</p>
 
-            <p class="letter-line">
-                and the memories.
-            </p>
+                <div id="signature" class="signature qwitcher-grypen-regular">
+                    Isba Eman
+                </div>
 
-            <div class="letter-gap"></div>
-
-            <p class="letter-line">
-                So this isn't goodbye.
-            </p>
-
-            <p class="letter-line">
-                Just one last wish...
-            </p>
-
-            <p class="letter-line">
-                Stay.
-            </p>
-
-            <div
-                id="signature"
-                class="signature qwitcher-grypen-regular"
-            >
-                Isba Eman
             </div>
+        </section>
 
-        </div>
-
-        <div class="letter-end"></div>
-
-    </section>
+    </div>
 
 </div>
 
@@ -897,160 +752,65 @@ body {
 const PASSWORD = "2322007";
 
 const lyrics = [
-
-    {
-        time: 0,
-        text: "چھوڑ کے جانے کی باتیں کیا نہ کرو"
-    },
-
-    {
-        time: 4,
-        text: "حالِ دل سمجھو ذرا، وعدے کیا نہ کرو"
-    },
-
-    {
-        time: 9,
-        text: "چھوڑ کے جانے کی باتیں کیا نہ کرو"
-    },
-
-    {
-        time: 14,
-        text: "حالِ دل سمجھو ذرا، وعدے کیا نہ کرو"
-    },
-
-    {
-        time: 19,
-        text: "خاموشیوں میں بھی الفاظ تو چن لینا"
-    },
-
-    {
-        time: 24,
-        text: "بانہوں میں جب بھروں دھڑکن میری سن لینا"
-    },
-
-    {
-        time: 29,
-        text: "یہ آنکھیں میری کہتی ہیں کہ تُو ٹھہر جا"
-    },
-
-    {
-        time: 34,
-        text: "ادھورا سا یہ گھر لگے گا تیرے بنا"
-    },
-
-    {
-        time: 39,
-        text: "یہ آنکھیں میری کہتی ہیں کہ تُو ٹھہر جا"
-    },
-
-    {
-        time: 44,
-        text: "ادھورا سا یہ گھر لگے گا تیرے بنا"
-    },
-
-    {
-        time: 49,
-        text: "بہتی ہواؤں کو روک نہیں، پر سانسوں میں بھر سکتے ہو"
-    },
-
-    {
-        time: 56,
-        text: "دل سے نکلتا نہ کوئی کسی کے، پر کھونے سے ڈر سکتے ہو"
-    },
-
-    {
-        time: 63,
-        text: "کہنے کو کتنا بچا، کیسے کروں میں بیاں"
-    },
-
-    {
-        time: 70,
-        text: "ہم ملیں گے پھر سے کبھی، آسمان پہ ہوگی جگہ"
-    },
-
-    {
-        time: 77,
-        text: "یہ آنکھیں میری کہتی ہیں کہ تُو ٹھہر جا"
-    },
-
-    {
-        time: 82,
-        text: "ادھورا سا یہ گھر لگے گا تیرے بنا"
-    },
-
-    {
-        time: 87,
-        text: "یہ آنکھیں میری کہتی ہیں کہ تُو ٹھہر جا"
-    },
-
-    {
-        time: 92,
-        text: "ادھورا سا یہ گھر لگے گا تیرے بنا"
-    }
-
+    { time: 0,  text: "چھوڑ کے جانے کی باتیں کیا نہ کرو" },
+    { time: 4,  text: "حالِ دل سمجھو ذرا، وعدے کیا نہ کرو" },
+    { time: 9,  text: "چھوڑ کے جانے کی باتیں کیا نہ کرو" },
+    { time: 14, text: "حالِ دل سمجھو ذرا، وعدے کیا نہ کرو" },
+    { time: 19, text: "خاموشیوں میں بھی الفاظ تو چن لینا" },
+    { time: 24, text: "بانہوں میں جب بھروں دھڑکن میری سن لینا" },
+    { time: 29, text: "یہ آنکھیں میری کہتی ہیں کہ تُو ٹھہر جا" },
+    { time: 34, text: "ادھورا سا یہ گھر لگے گا تیرے بنا" },
+    { time: 39, text: "یہ آنکھیں میری کہتی ہیں کہ تُو ٹھہر جا" },
+    { time: 44, text: "ادھورا سا یہ گھر لگے گا تیرے بنا" },
+    { time: 49, text: "بہتی ہواؤں کو روک نہیں، پر سانسوں میں بھر سکتے ہو" },
+    { time: 56, text: "دل سے نکلتا نہ کوئی کسی کے، پر کھونے سے ڈر سکتے ہو" },
+    { time: 63, text: "کہنے کو کتنا بچا، کیسے کروں میں بیاں" },
+    { time: 70, text: "ہم ملیں گے پھر سے کبھی، آسمان پہ ہوگی جگہ" },
+    { time: 77, text: "یہ آنکھیں میری کہتی ہیں کہ تُو ٹھہر جا" },
+    { time: 82, text: "ادھورا سا یہ گھر لگے گا تیرے بنا" },
+    { time: 87, text: "یہ آنکھیں میری کہتی ہیں کہ تُو ٹھہر جا" },
+    { time: 92, text: "ادھورا سا یہ گھر لگے گا تیرے بنا" }
 ];
 
+/* How long the last line stays before the screen goes black. */
+const TAIL_SECONDS = 7;
 
-const passwordScreen =
-    document.getElementById("passwordScreen");
+const passwordScreen = document.getElementById("passwordScreen");
+const passwordForm   = document.getElementById("passwordForm");
+const passwordInput  = document.getElementById("passwordInput");
+const passwordError  = document.getElementById("passwordError");
+const wishScreen     = document.getElementById("wishScreen");
+const beginScreen    = document.getElementById("beginScreen");
+const beginButton    = document.getElementById("beginButton");
+const experience     = document.getElementById("experience");
+const video          = document.getElementById("backgroundVideo");
+const lyricElement   = document.getElementById("lyric");
+const endingScreen   = document.getElementById("endingScreen");
+const letterSection  = document.getElementById("letterSection");
+const letterLines    = document.querySelectorAll(".letter-line");
+const signature      = document.getElementById("signature");
 
-const passwordForm =
-    document.getElementById("passwordForm");
-
-const passwordInput =
-    document.getElementById("passwordInput");
-
-const passwordError =
-    document.getElementById("passwordError");
-
-const wishScreen =
-    document.getElementById("wishScreen");
-
-const beginScreen =
-    document.getElementById("beginScreen");
-
-const beginButton =
-    document.getElementById("beginButton");
-
-const experience =
-    document.getElementById("experience");
-
-const video =
-    document.getElementById("backgroundVideo");
-
-const lyricElement =
-    document.getElementById("lyric");
-
-const endingScreen =
-    document.getElementById("endingScreen");
-
-const letterSection =
-    document.getElementById("letterSection");
-
-const letterLines =
-    document.querySelectorAll(".letter-line");
-
-const signature =
-    document.getElementById("signature");
+let currentLyricIndex  = -1;
+let experienceStarted  = false;
+let endingStarted      = false;
+let letterOpened       = false;
+let usingFallbackClock = false;
+let clockStart         = 0;
 
 
-let currentLyricIndex = -1;
-let experienceStarted = false;
-let endingStarted = false;
+/* ============================ PASSWORD ============================ */
 
-
-passwordForm.addEventListener("submit", function(event) {
+passwordForm.addEventListener("submit", function (event) {
 
     event.preventDefault();
 
-    const enteredPassword =
-        passwordInput.value.trim();
-
-    if (enteredPassword === PASSWORD) {
+    if (passwordInput.value.trim() === PASSWORD) {
 
         passwordError.classList.remove("show");
-
         passwordScreen.classList.remove("active");
+
+        /* Warm the media file up while the title plays. */
+        try { video.load(); } catch (e) {}
 
         setTimeout(() => {
 
@@ -1081,9 +841,7 @@ passwordForm.addEventListener("submit", function(event) {
     } else {
 
         passwordError.classList.add("show");
-
         passwordInput.value = "";
-
         passwordInput.focus();
 
         passwordInput.animate(
@@ -1094,191 +852,148 @@ passwordForm.addEventListener("submit", function(event) {
                 { transform: "translateX(-3px)" },
                 { transform: "translateX(0)" }
             ],
-            {
-                duration: 380,
-                easing: "ease-out"
-            }
+            { duration: 380, easing: "ease-out" }
         );
-
     }
 
 });
 
 
-beginButton.addEventListener("click", async function() {
+/* ============================ BEGIN ============================ */
+
+beginButton.addEventListener("click", function () {
 
     if (experienceStarted) return;
-
     experienceStarted = true;
+
+    /*
+       play() must be called SYNCHRONOUSLY inside this click,
+       otherwise browsers treat it as autoplay and block it.
+    */
+    let played = false;
+
+    try {
+        video.currentTime = 0;
+    } catch (e) {}
+
+    const playPromise = video.play();
+
+    if (playPromise && typeof playPromise.then === "function") {
+        playPromise
+            .then(() => { played = true; })
+            .catch(() => { startFallbackClock(); });
+    } else {
+        played = true;
+    }
 
     beginScreen.classList.remove("active");
 
     setTimeout(() => {
-
         experience.classList.add("active");
-
-        video.currentTime = 0;
-
-        const playPromise = video.play();
-
-        if (playPromise !== undefined) {
-
-            playPromise.catch(() => {});
-
-        }
-
     }, 850);
+
+    /* Safety net: if the video never actually starts, run on a timer. */
+    setTimeout(() => {
+        if (video.paused || video.currentTime === 0) {
+            startFallbackClock();
+        }
+    }, 1800);
+
+    startLoop();
 
 });
 
+video.addEventListener("error", startFallbackClock);
+video.addEventListener("stalled", function () {
+    if (experienceStarted && video.currentTime === 0) startFallbackClock();
+});
 
-function getLyricIndex(currentTime) {
-
-    let index = -1;
-
-    for (let i = 0; i < lyrics.length; i++) {
-
-        if (currentTime >= lyrics[i].time) {
-            index = i;
-        } else {
-            break;
-        }
-
-    }
-
-    return index;
+function startFallbackClock() {
+    if (usingFallbackClock || endingStarted) return;
+    usingFallbackClock = true;
+    clockStart = performance.now();
 }
 
 
+/* ============================ CLOCK ============================ */
+
+function getTime() {
+    if (usingFallbackClock) {
+        return (performance.now() - clockStart) / 1000;
+    }
+    return video.currentTime;
+}
+
+function getLyricIndex(t) {
+    let index = -1;
+    for (let i = 0; i < lyrics.length; i++) {
+        if (t >= lyrics[i].time) index = i;
+        else break;
+    }
+    return index;
+}
+
 function showLyric(index) {
 
-    if (index < 0 || index >= lyrics.length) {
-        return;
-    }
+    if (index < 0 || index >= lyrics.length) return;
 
     lyricElement.classList.remove("visible");
 
     setTimeout(() => {
 
-        lyricElement.textContent =
-            lyrics[index].text;
+        lyricElement.textContent = lyrics[index].text;
 
         requestAnimationFrame(() => {
-
             requestAnimationFrame(() => {
                 lyricElement.classList.add("visible");
             });
-
         });
 
-    }, 450);
-
+    }, 400);
 }
 
+function startLoop() {
 
-function syncLyrics() {
+    function tick() {
 
-    if (!experienceStarted || endingStarted) {
-        return;
-    }
+        if (!experienceStarted || endingStarted) return;
 
-    const currentTime = video.currentTime;
+        const t = getTime();
+        const index = getLyricIndex(t);
 
-    const index =
-        getLyricIndex(currentTime);
-
-    if (index !== currentLyricIndex) {
-
-        currentLyricIndex = index;
-
-        if (index >= 0) {
-            showLyric(index);
+        if (index !== currentLyricIndex) {
+            currentLyricIndex = index;
+            if (index >= 0) showLyric(index);
         }
 
-    }
+        const lastTime = lyrics[lyrics.length - 1].time;
 
-    if (
-        currentLyricIndex === lyrics.length - 1 &&
-        currentTime >= lyrics[lyrics.length - 1].time
-    ) {
-
-        const finalDuration =
-            video.duration && isFinite(video.duration)
-                ? video.duration
-                : lyrics[lyrics.length - 1].time + 8;
-
-        if (
-            currentTime >=
-            Math.min(
-                finalDuration - 1.2,
-                lyrics[lyrics.length - 1].time + 5
-            )
-        ) {
-
+        if (t >= lastTime + TAIL_SECONDS) {
             beginEnding();
-
+            return;
         }
 
+        requestAnimationFrame(tick);
     }
 
+    requestAnimationFrame(tick);
 }
 
-
-video.addEventListener(
-    "timeupdate",
-    syncLyrics
-);
+video.addEventListener("ended", beginEnding);
 
 
-video.addEventListener(
-    "seeking",
-    function() {
-
-        if (!experienceStarted) return;
-
-        const index =
-            getLyricIndex(video.currentTime);
-
-        currentLyricIndex = index;
-
-        if (index >= 0) {
-
-            lyricElement.textContent =
-                lyrics[index].text;
-
-            lyricElement.classList.add("visible");
-
-        } else {
-
-            lyricElement.textContent = "";
-
-            lyricElement.classList.remove("visible");
-
-        }
-
-    }
-);
-
-
-video.addEventListener(
-    "ended",
-    function() {
-        beginEnding();
-    }
-);
-
+/* ============================ ENDING ============================ */
 
 function beginEnding() {
 
     if (endingStarted) return;
-
     endingStarted = true;
 
     lyricElement.classList.remove("visible");
 
     setTimeout(() => {
 
-        video.pause();
+        try { video.pause(); } catch (e) {}
 
         experience.classList.remove("active");
 
@@ -1286,156 +1001,81 @@ function beginEnding() {
 
             endingScreen.classList.add("active");
 
+            /* Unlock scrolling only now. */
+            document.documentElement.classList.remove("locked");
+            document.body.classList.remove("locked");
+
             setTimeout(() => {
-
-                endingScreen.classList.add(
-                    "show-indicator"
-                );
-
+                endingScreen.classList.add("show-indicator");
             }, 2800);
 
         }, 1700);
 
     }, 1300);
-
 }
 
 
-let letterOpened = false;
-
+/* ============================ LETTER ============================ */
 
 function openLetter() {
 
-    if (letterOpened) return;
-
-    const scrollPosition =
-        window.scrollY ||
-        window.pageYOffset;
-
-    if (scrollPosition < window.innerHeight * .55) {
-        return;
-    }
-
+    if (letterOpened || !endingStarted) return;
     letterOpened = true;
 
     endingScreen.classList.remove("active");
+    letterSection.classList.add("revealed");
 
-    setTimeout(() => {
-
-        letterSection.classList.add("revealed");
-
-        setTimeout(() => {
-
-            letterSection.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-
-        }, 350);
-
-    }, 700);
-
+    /* Animate the lines only once the letter is actually visible. */
+    letterLines.forEach(line => letterObserver.observe(line));
+    signatureObserver.observe(signature);
 }
 
+window.addEventListener("scroll", function () {
 
-window.addEventListener(
-    "scroll",
-    function() {
+    if (!endingStarted || letterOpened) return;
 
-        if (!endingStarted || letterOpened) {
-            return;
-        }
+    if (window.scrollY > window.innerHeight * .2) {
+        openLetter();
+    }
 
-        if (window.scrollY > window.innerHeight * .25) {
-            openLetter();
-        }
+}, { passive: true });
 
+const letterObserver = new IntersectionObserver(
+    (entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+                letterObserver.unobserve(entry.target);
+            }
+        });
     },
-    { passive: true }
+    { threshold: .2, rootMargin: "0px 0px -6% 0px" }
+);
+
+const signatureObserver = new IntersectionObserver(
+    (entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                signature.classList.add("visible");
+                signatureObserver.unobserve(signature);
+            }
+        });
+    },
+    { threshold: .4 }
 );
 
 
-const letterObserver =
-    new IntersectionObserver(
-        (entries) => {
+/* ============================ MISC ============================ */
 
-            entries.forEach(entry => {
-
-                if (entry.isIntersecting) {
-
-                    entry.target.classList.add(
-                        "visible"
-                    );
-
-                    letterObserver.unobserve(
-                        entry.target
-                    );
-
-                }
-
-            });
-
-        },
-        {
-            threshold: .25,
-            rootMargin: "0px 0px -8% 0px"
-        }
-    );
-
-
-letterLines.forEach(line => {
-    letterObserver.observe(line);
+passwordInput.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+        passwordForm.requestSubmit();
+    }
 });
 
-
-const signatureObserver =
-    new IntersectionObserver(
-        (entries) => {
-
-            entries.forEach(entry => {
-
-                if (entry.isIntersecting) {
-
-                    signature.classList.add(
-                        "visible"
-                    );
-
-                    signatureObserver.unobserve(
-                        signature
-                    );
-
-                }
-
-            });
-
-        },
-        {
-            threshold: .5
-        }
-    );
-
-
-signatureObserver.observe(signature);
-
-
-passwordInput.addEventListener(
-    "keydown",
-    function(event) {
-
-        if (event.key === "Enter") {
-            passwordForm.requestSubmit();
-        }
-
-    }
-);
-
-
-experience.addEventListener(
-    "contextmenu",
-    function(event) {
-        event.preventDefault();
-    }
-);
+experience.addEventListener("contextmenu", function (event) {
+    event.preventDefault();
+});
 
 </script>
 
