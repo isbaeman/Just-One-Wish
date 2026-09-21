@@ -310,27 +310,39 @@ body {
     visibility: visible;
 }
 
-#backgroundVideo {
+#backgroundImage {
     position: absolute;
-    inset: -3%;
-    width: 106%;
-    height: 106%;
+    inset: -4%;
+    width: 108%;
+    height: 108%;
     object-fit: cover;
+    object-position: center 42%;
+    z-index: 1;
     opacity: 0;
     filter:
-        brightness(.25)
-        contrast(.88)
-        saturate(.55)
-        blur(1.2px);
-    transform: scale(1.025);
+        brightness(.62)
+        contrast(.95)
+        saturate(.78);
+    transform: scale(1.02);
     transition:
-        opacity 3s ease,
-        transform 20s linear;
+        opacity 3.5s ease,
+        transform 30s linear;
 }
 
-#experience.active #backgroundVideo {
-    opacity: .75;
-    transform: scale(1.075);
+#experience.active #backgroundImage {
+    opacity: .9;
+    transform: scale(1.1);
+}
+
+/* The video now only carries the audio. */
+#backgroundVideo {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .video-overlay {
@@ -585,15 +597,15 @@ body {
         text-shadow: 0 2px 18px rgba(0,0,0,.9);
     }
 
-    #backgroundVideo {
-        inset: -5%;
-        width: 110%;
-        height: 110%;
+    #backgroundImage {
+        inset: -6%;
+        width: 112%;
+        height: 112%;
+        object-position: center 40%;
         filter:
-            brightness(.22)
-            contrast(.85)
-            saturate(.45)
-            blur(1.5px);
+            brightness(.55)
+            contrast(.92)
+            saturate(.72);
     }
 
     .scroll-indicator { bottom: 6vh; }
@@ -689,6 +701,12 @@ body {
 
     <main id="experience">
 
+        <img
+            id="backgroundImage"
+            src="rose.png"
+            alt=""
+            aria-hidden="true">
+
         <video
             id="backgroundVideo"
             src="song.mp4"
@@ -752,8 +770,8 @@ body {
 const PASSWORD = "2322007";
 
 const lyrics = [
-    { time: 5,  text: "چھوڑ کے جانے کی باتیں کیا نہ کرو" },
-    { time: 10,  text: "حالِ دل سمجھو ذرا، وعدے کیا نہ کرو" },
+    { time: 0,  text: "چھوڑ کے جانے کی باتیں کیا نہ کرو" },
+    { time: 4,  text: "حالِ دل سمجھو ذرا، وعدے کیا نہ کرو" },
     { time: 9,  text: "چھوڑ کے جانے کی باتیں کیا نہ کرو" },
     { time: 14, text: "حالِ دل سمجھو ذرا، وعدے کیا نہ کرو" },
     { time: 19, text: "خاموشیوں میں بھی الفاظ تو چن لینا" },
